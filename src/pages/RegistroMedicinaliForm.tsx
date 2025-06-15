@@ -60,18 +60,18 @@ const RegistroMedicinaliForm = () => {
   };
 
   return (
-    <div>
-      <label className="block mb-2 text-sm font-medium">Seleziona data</label>
+    <div className="bg-gradient-to-br from-blue-100 via-teal-100 to-green-100 p-5 rounded-xl shadow-2xl">
+      <label className="block mb-2 text-sm font-medium text-cyan-800 drop-shadow">Seleziona data</label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant={"outline"}
             className={cn(
-              "w-full justify-start text-left font-normal mb-4",
+              "w-full justify-start text-left font-normal mb-4 bg-white/60 shadow-md hover:bg-blue-50/60 hover:shadow-lg",
               !date && "text-muted-foreground"
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
+            <CalendarIcon className="mr-2 h-4 w-4 text-cyan-600" />
             {date ? format(date, "PPP", { locale: it }) : <span>Scegli una data</span>}
           </Button>
         </PopoverTrigger>
@@ -88,7 +88,7 @@ const RegistroMedicinaliForm = () => {
       </Popover>
 
       <div className="space-y-3 mb-7">
-        <div className="font-medium mb-1 text-base">Medicinali</div>
+        <div className="font-semibold mb-1 text-base text-green-700 tracking-wide">Medicinali</div>
         {medicinaliList.map((m) => {
           const stato = medicinaliStato[m.id];
           const isPreso = stato === "preso";
@@ -96,26 +96,25 @@ const RegistroMedicinaliForm = () => {
             <div
               key={m.id}
               className={cn(
-                "flex items-center justify-between transition-all duration-300 group border-2 shadow-sm rounded-xl px-3 py-4",
+                "flex items-center justify-between transition-all duration-300 group border-2 rounded-xl px-3 py-4 backdrop-blur-sm bg-opacity-80 shadow-md hover:shadow-lg hover:scale-[1.02]",
                 isPreso
-                  ? "bg-green-500/90 border-green-600"
+                  ? "bg-gradient-to-tr from-green-400/80 via-green-300/90 to-green-200/90 border-green-600/80"
                   : stato === "non preso"
-                  ? "bg-red-500/90 border-red-600"
-                  : "bg-white border-gray-300",
-                "hover:shadow-md hover:scale-[1.02]"
+                  ? "bg-gradient-to-tr from-red-400/80 via-red-300/90 to-red-200/90 border-red-600/80"
+                  : "bg-white/80 border-blue-200/70",
               )}
               style={{ minHeight: 72 }}
             >
               <div className="flex items-center gap-3">
                 <div
                   className={cn(
-                    "flex items-center justify-center rounded-full transition-colors duration-300",
+                    "flex items-center justify-center rounded-full transition-colors duration-300 shadow",
                     isPreso
-                      ? "bg-white text-green-600"
+                      ? "bg-white text-green-600 ring-2 ring-green-400/60"
                       : stato === "non preso"
-                      ? "bg-white text-red-600"
-                      : "bg-gray-100 text-gray-500",
-                    "w-10 h-10 shadow"
+                      ? "bg-white text-red-600 ring-2 ring-red-400/60"
+                      : "bg-gray-100 text-gray-500 ring-2 ring-blue-200/30",
+                    "w-10 h-10"
                   )}
                 >
                   {isPreso ? (
@@ -127,7 +126,7 @@ const RegistroMedicinaliForm = () => {
                   )}
                 </div>
                 <span className={cn(
-                  "font-semibold text-lg",
+                  "font-semibold text-lg drop-shadow",
                   isPreso ? "text-white" : stato === "non preso" ? "text-white" : "text-gray-800"
                 )}>{m.nome}</span>
               </div>
@@ -135,12 +134,12 @@ const RegistroMedicinaliForm = () => {
                 size="sm"
                 variant={isPreso ? "secondary" : "outline"}
                 className={cn(
-                  "rounded-full font-bold transition-all",
+                  "rounded-full font-bold transition-all drop-shadow",
                   isPreso
                     ? "bg-white text-green-600 border-white hover:bg-green-100 hover:text-green-700"
                     : stato === "non preso"
                     ? "bg-white text-red-600 border-white hover:bg-red-100 hover:text-red-700"
-                    : "bg-gray-100 text-gray-600 border-gray-200"
+                    : "bg-gradient-to-tr from-cyan-100 to-blue-100 text-cyan-700 border-blue-100 hover:bg-cyan-50"
                 )}
                 onClick={() => handleToggle(m.id)}
               >
@@ -151,24 +150,26 @@ const RegistroMedicinaliForm = () => {
         })}
       </div>
       <div className="mb-3">
-        <label className="block text-sm font-medium mb-1">Pressione sanguigna (mmHg)</label>
+        <label className="block text-sm font-medium mb-1 text-blue-900">Pressione sanguigna (mmHg)</label>
         <Input
           type="text"
           placeholder="Es: 120/80"
           value={pressione}
           onChange={(e) => setPressione(e.target.value)}
+          className="bg-blue-50/50 focus:bg-white/90"
         />
       </div>
       <div className="mb-6">
-        <label className="block text-sm font-medium mb-1">Glicemia (mg/dl)</label>
+        <label className="block text-sm font-medium mb-1 text-green-900">Glicemia (mg/dl)</label>
         <Input
           type="number"
           placeholder="Es: 90"
           value={glicemia}
           onChange={(e) => setGlicemia(e.target.value)}
+          className="bg-green-50/50 focus:bg-white/90"
         />
       </div>
-      <Button className="w-full text-base py-3 rounded-xl font-semibold shadow-sm" onClick={handleSalva}>
+      <Button className="w-full text-base py-3 rounded-xl font-semibold shadow-lg bg-gradient-to-tr from-cyan-400 via-blue-400 to-green-300 text-white hover:from-cyan-500 hover:to-green-400 hover:scale-[1.03] transition-all duration-300">
         Salva
       </Button>
       <Toaster />
