@@ -2,7 +2,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.3475623496f341d38f042f06aeaa2f38',
+  appId: 'com.lovable.facilevitasana',
   appName: 'facile-vita-sana',
   webDir: 'dist',
   bundledWebRuntime: false,
