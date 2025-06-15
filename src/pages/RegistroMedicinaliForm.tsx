@@ -86,38 +86,68 @@ const RegistroMedicinaliForm = () => {
         </PopoverContent>
       </Popover>
 
-      <div className="space-y-2 mb-6">
-        <div className="font-medium mb-1">Medicinali</div>
-        {medicinaliList.map((m) => (
-          <div
-            key={m.id}
-            className={cn(
-              "flex items-center justify-between p-2 rounded border",
-              medicinaliStato[m.id] === "preso"
-                ? "border-green-400 bg-green-50"
-                : medicinaliStato[m.id] === "non preso"
-                ? "border-red-400 bg-red-50"
-                : "border-gray-300"
-            )}
-          >
-            <span>{m.nome}</span>
-            <Button
-              size="sm"
-              variant={medicinaliStato[m.id] === "preso" ? "default" : "outline"}
-              onClick={() => handleToggle(m.id)}
-            >
-              {medicinaliStato[m.id] === "preso" ? (
-                <>
-                  <Check className="mr-1 h-4 w-4" /> Preso
-                </>
-              ) : (
-                <>
-                  <X className="mr-1 h-4 w-4" /> Non preso
-                </>
+      <div className="space-y-3 mb-7">
+        <div className="font-medium mb-1 text-base">Medicinali</div>
+        {medicinaliList.map((m) => {
+          const stato = medicinaliStato[m.id];
+          const isPreso = stato === "preso";
+          return (
+            <div
+              key={m.id}
+              className={cn(
+                "flex items-center justify-between transition-all duration-300 group border-2 shadow-sm rounded-xl px-3 py-4",
+                isPreso
+                  ? "bg-green-500/90 border-green-600"
+                  : stato === "non preso"
+                  ? "bg-red-500/90 border-red-600"
+                  : "bg-white border-gray-300",
+                "hover:shadow-md hover:scale-[1.02]"
               )}
-            </Button>
-          </div>
-        ))}
+              style={{ minHeight: 72 }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={cn(
+                    "flex items-center justify-center rounded-full transition-colors duration-300",
+                    isPreso
+                      ? "bg-white text-green-600"
+                      : stato === "non preso"
+                      ? "bg-white text-red-600"
+                      : "bg-gray-100 text-gray-500",
+                    "w-10 h-10 shadow"
+                  )}
+                >
+                  {isPreso ? (
+                    <Check className="w-7 h-7" strokeWidth={3}/>
+                  ) : stato === "non preso" ? (
+                    <X className="w-7 h-7" strokeWidth={3}/>
+                  ) : (
+                    <span className="font-bold text-xl">?</span>
+                  )}
+                </div>
+                <span className={cn(
+                  "font-semibold text-lg",
+                  isPreso ? "text-white" : stato === "non preso" ? "text-white" : "text-gray-800"
+                )}>{m.nome}</span>
+              </div>
+              <Button
+                size="sm"
+                variant={isPreso ? "secondary" : "outline"}
+                className={cn(
+                  "rounded-full font-bold transition-all",
+                  isPreso
+                    ? "bg-white text-green-600 border-white hover:bg-green-100 hover:text-green-700"
+                    : stato === "non preso"
+                    ? "bg-white text-red-600 border-white hover:bg-red-100 hover:text-red-700"
+                    : "bg-gray-100 text-gray-600 border-gray-200"
+                )}
+                onClick={() => handleToggle(m.id)}
+              >
+                {isPreso ? "Preso" : "Non preso"}
+              </Button>
+            </div>
+          );
+        })}
       </div>
       <div className="mb-3">
         <label className="block text-sm font-medium mb-1">Pressione sanguigna (mmHg)</label>
@@ -137,7 +167,7 @@ const RegistroMedicinaliForm = () => {
           onChange={(e) => setGlicemia(e.target.value)}
         />
       </div>
-      <Button className="w-full" onClick={handleSalva}>
+      <Button className="w-full text-base py-3 rounded-xl font-semibold shadow-sm" onClick={handleSalva}>
         Salva
       </Button>
       <Toaster />
