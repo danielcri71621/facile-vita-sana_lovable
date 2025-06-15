@@ -1,9 +1,8 @@
-
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
-import { CalendarIcon, Check, X, Plus } from "lucide-react";
+import { CalendarIcon, Check, X, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -99,6 +98,20 @@ const RegistroMedicinaliForm = () => {
       ...prev,
       [id]: prev[id] === "preso" ? "non preso" : "preso",
     }));
+  };
+
+  // Funzione per eliminare un medicinale dalla lista corrente
+  const handleDeleteMedicinale = (id: number) => {
+    setMedicinaliList((prev) => prev.filter((m) => m.id !== id));
+    setMedicinaliStato((prev) => {
+      const updated = { ...prev };
+      delete updated[id];
+      return updated;
+    });
+    toast({
+      title: "Medicinale eliminato",
+      description: "Il medicinale è stato rimosso dalla lista.",
+    });
   };
 
   const handleSalva = () => {
@@ -262,22 +275,34 @@ const RegistroMedicinaliForm = () => {
                   isPreso ? "text-white" : stato === "non preso" ? "text-white" : "text-gray-800"
                 )}>{m.nome}</span>
               </div>
-              <Button
-                size="sm"
-                variant={isPreso ? "secondary" : "outline"}
-                className={cn(
-                  "rounded-full font-bold transition-all drop-shadow px-3 py-1 text-base sm:text-base",
-                  isPreso
-                    ? "bg-white text-green-600 border-white hover:bg-green-100 hover:text-green-700"
-                    : stato === "non preso"
-                    ? "bg-white text-red-600 border-white hover:bg-red-100 hover:text-red-700"
-                    : "bg-gradient-to-tr from-cyan-100 to-blue-100 text-cyan-700 border-blue-100 hover:bg-cyan-50"
-                )}
-                style={{ minWidth: 90, minHeight: 40 }}
-                onClick={() => handleToggle(m.id)}
-              >
-                {isPreso ? "Preso" : "Non preso"}
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  size="sm"
+                  variant={isPreso ? "secondary" : "outline"}
+                  className={cn(
+                    "rounded-full font-bold transition-all drop-shadow px-3 py-1 text-base sm:text-base",
+                    isPreso
+                      ? "bg-white text-green-600 border-white hover:bg-green-100 hover:text-green-700"
+                      : stato === "non preso"
+                      ? "bg-white text-red-600 border-white hover:bg-red-100 hover:text-red-700"
+                      : "bg-gradient-to-tr from-cyan-100 to-blue-100 text-cyan-700 border-blue-100 hover:bg-cyan-50"
+                  )}
+                  style={{ minWidth: 90, minHeight: 40 }}
+                  onClick={() => handleToggle(m.id)}
+                >
+                  {isPreso ? "Preso" : "Non preso"}
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="ml-2 text-red-600 hover:bg-red-100"
+                  title="Elimina"
+                  aria-label="Elimina medicinale"
+                  onClick={() => handleDeleteMedicinale(m.id)}
+                >
+                  <Trash2 className="w-5 h-5" />
+                </Button>
+              </div>
             </div>
           );
         })}
