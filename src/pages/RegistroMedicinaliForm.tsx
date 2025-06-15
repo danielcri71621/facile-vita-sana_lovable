@@ -3,7 +3,7 @@ import * as React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
-import { CalendarIcon, Check, X } from "lucide-react";
+import { CalendarIcon, Check, X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -12,7 +12,8 @@ import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-const medicinaliList = [
+// Default list, now modifiable.
+const defaultMedicinaliList = [
   { id: 1, nome: "Aspirina" },
   { id: 2, nome: "Metformina" },
   { id: 3, nome: "Ramipril" },
@@ -26,9 +27,20 @@ interface MedicinaleData {
 
 const RegistroMedicinaliForm = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [medicinaliList, setMedicinaliList] = useState(defaultMedicinaliList);
   const [medicinaliStato, setMedicinaliStato] = useState<MedicinaleData>({});
   const [pressione, setPressione] = useState("");
   const [glicemia, setGlicemia] = useState("");
+  const [nuovoMedicinale, setNuovoMedicinale] = useState("");
+
+  // Trova prossimo id per nuovi medicinali
+  const nextMedicinaleId = React.useMemo(() => {
+    return (
+      (medicinaliList.length > 0
+        ? Math.max(...medicinaliList.map((m) => m.id))
+        : 0) + 1
+    );
+  }, [medicinaliList]);
 
   const handleToggle = (id: number) => {
     setMedicinaliStato((prev) => ({
@@ -57,6 +69,33 @@ const RegistroMedicinaliForm = () => {
         </span>
       ),
     });
+  };
+
+  const aggiungiMedicinale = () => {
+    const nomeTrimmed = nuovoMedicinale.trim();
+    if (!nomeTrimmed) return;
+    // Se già presente, non aggiunge
+    if (medicinaliList.some((med) => med.nome.toLowerCase() === nomeTrimmed.toLowerCase())) {
+      toast({
+        variant: "destructive",
+        title: "Medicinale già presente",
+        description: `${nomeTrimmed} è già nella lista.`,
+      });
+      return;
+    }
+    setMedicinaliList((prev) => [
+      ...prev,
+      { id: nextMedicinaleId, nome: nomeTrimmed },
+    ]);
+    setNuovoMedicinale("");
+  };
+
+  // Premere ENTER aggiunge medicinale
+  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      aggiungiMedicinale();
+    }
   };
 
   return (
@@ -99,7 +138,36 @@ const RegistroMedicinaliForm = () => {
       </Popover>
 
       <div className="space-y-3 mb-6 sm:mb-7">
-        <div className="font-semibold mb-1 text-base text-green-700 tracking-wide">Medicinali</div>
+        <div className="flex items-center gap-3 mb-1">
+          <div className="font-semibold text-base text-green-700 tracking-wide">
+            Medicinali
+          </div>
+        </div>
+        {/* Campo aggiunta nuovo medicinale */}
+        <div className="flex gap-2 mb-1 flex-col sm:flex-row items-stretch sm:items-center">
+          <Input
+            type="text"
+            placeholder="Aggiungi nuovo medicinale"
+            value={nuovoMedicinale}
+            onChange={(e) => setNuovoMedicinale(e.target.value)}
+            onKeyDown={onInputKeyDown}
+            className="bg-white/70 px-3 py-2 rounded-lg flex-1 text-base sm:text-sm"
+            style={{ minHeight: 40 }}
+            maxLength={50}
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            className="rounded-full px-2 py-2 flex-shrink-0"
+            onClick={aggiungiMedicinale}
+            aria-label="Aggiungi"
+            style={{ minHeight: 40, minWidth: 40 }}
+          >
+            <Plus className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {/* Lista dinamica dei medicinali */}
         {medicinaliList.map((m) => {
           const stato = medicinaliStato[m.id];
           const isPreso = stato === "preso";
