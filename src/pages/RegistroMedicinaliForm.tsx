@@ -1,8 +1,9 @@
+
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
-import { CalendarIcon, Check, X, Plus, Trash2 } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -10,6 +11,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import MedicinaliList, { Medicinale, StatoMedicinale } from "@/components/MedicinaliList";
+import MedicinaleInput from "@/components/MedicinaleInput";
 
 // Default list, now modifiable.
 const defaultMedicinaliList = [
@@ -17,8 +20,6 @@ const defaultMedicinaliList = [
   { id: 2, nome: "Metformina" },
   { id: 3, nome: "Ramipril" },
 ];
-
-type StatoMedicinale = "preso" | "non preso";
 
 interface MedicinaleData {
   [id: number]: StatoMedicinale;
@@ -208,104 +209,22 @@ const RegistroMedicinaliForm = () => {
             Medicinali
           </div>
         </div>
+
         {/* Campo aggiunta nuovo medicinale */}
-        <div className="flex gap-2 mb-1 flex-col sm:flex-row items-stretch sm:items-center">
-          <Input
-            type="text"
-            placeholder="Aggiungi nuovo medicinale"
-            value={nuovoMedicinale}
-            onChange={(e) => setNuovoMedicinale(e.target.value)}
-            onKeyDown={onInputKeyDown}
-            className="bg-white/70 px-3 py-2 rounded-lg flex-1 text-base sm:text-sm"
-            style={{ minHeight: 40 }}
-            maxLength={50}
-          />
-          <Button
-            type="button"
-            variant="secondary"
-            className="rounded-full px-2 py-2 flex-shrink-0"
-            onClick={aggiungiMedicinale}
-            aria-label="Aggiungi"
-            style={{ minHeight: 40, minWidth: 40 }}
-          >
-            <Plus className="w-5 h-5" />
-          </Button>
-        </div>
+        <MedicinaleInput
+          value={nuovoMedicinale}
+          onChange={setNuovoMedicinale}
+          onAdd={aggiungiMedicinale}
+          onKeyDown={onInputKeyDown}
+        />
 
         {/* Lista dinamica dei medicinali */}
-        {medicinaliList.map((m) => {
-          const stato = medicinaliStato[m.id];
-          const isPreso = stato === "preso";
-          return (
-            <div
-              key={m.id}
-              className={cn(
-                "flex items-center justify-between transition-all duration-300 group border-2 rounded-xl px-2 py-3 sm:px-3 sm:py-4 backdrop-blur-sm bg-opacity-80 shadow-md hover:shadow-lg hover:scale-[1.02]",
-                "gap-2 sm:gap-3",
-                isPreso
-                  ? "bg-gradient-to-tr from-green-400/80 via-green-300/90 to-green-200/90 border-green-600/80"
-                  : stato === "non preso"
-                  ? "bg-gradient-to-tr from-red-400/80 via-red-300/90 to-red-200/90 border-red-600/80"
-                  : "bg-white/80 border-blue-200/70",
-              )}
-              style={{ minHeight: 66 }}
-            >
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div
-                  className={cn(
-                    "flex items-center justify-center rounded-full transition-colors duration-300 shadow",
-                    isPreso
-                      ? "bg-white text-green-600 ring-2 ring-green-400/60"
-                      : stato === "non preso"
-                      ? "bg-white text-red-600 ring-2 ring-red-400/60"
-                      : "bg-gray-100 text-gray-500 ring-2 ring-blue-200/30",
-                    "w-10 h-10"
-                  )}
-                >
-                  {isPreso ? (
-                    <Check className="w-7 h-7" strokeWidth={3}/>
-                  ) : stato === "non preso" ? (
-                    <X className="w-7 h-7" strokeWidth={3}/>
-                  ) : (
-                    <span className="font-bold text-xl">?</span>
-                  )}
-                </div>
-                <span className={cn(
-                  "font-semibold text-base sm:text-lg drop-shadow",
-                  isPreso ? "text-white" : stato === "non preso" ? "text-white" : "text-gray-800"
-                )}>{m.nome}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Button
-                  size="sm"
-                  variant={isPreso ? "secondary" : "outline"}
-                  className={cn(
-                    "rounded-full font-bold transition-all drop-shadow px-3 py-1 text-base sm:text-base",
-                    isPreso
-                      ? "bg-white text-green-600 border-white hover:bg-green-100 hover:text-green-700"
-                      : stato === "non preso"
-                      ? "bg-white text-red-600 border-white hover:bg-red-100 hover:text-red-700"
-                      : "bg-gradient-to-tr from-cyan-100 to-blue-100 text-cyan-700 border-blue-100 hover:bg-cyan-50"
-                  )}
-                  style={{ minWidth: 90, minHeight: 40 }}
-                  onClick={() => handleToggle(m.id)}
-                >
-                  {isPreso ? "Preso" : "Non preso"}
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="ml-2 text-red-600 hover:bg-red-100"
-                  title="Elimina"
-                  aria-label="Elimina medicinale"
-                  onClick={() => handleDeleteMedicinale(m.id)}
-                >
-                  <Trash2 className="w-5 h-5" />
-                </Button>
-              </div>
-            </div>
-          );
-        })}
+        <MedicinaliList
+          medicinali={medicinaliList}
+          medicinaliStato={medicinaliStato}
+          onToggle={handleToggle}
+          onDelete={handleDeleteMedicinale}
+        />
       </div>
       <div className="mb-3">
         <label className="block text-base sm:text-sm font-medium mb-1 text-blue-900">
@@ -346,3 +265,4 @@ const RegistroMedicinaliForm = () => {
 };
 
 export default RegistroMedicinaliForm;
+
