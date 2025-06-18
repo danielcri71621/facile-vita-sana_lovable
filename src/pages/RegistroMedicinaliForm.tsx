@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
@@ -20,6 +19,12 @@ interface InserimentoMedicinale {
   timestamp: number;
 }
 
+interface ParametriVitali {
+  data: string;
+  pressione: string;
+  glicemia: string;
+}
+
 const RegistroMedicinaliForm = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [orario, setOrario] = useState("");
@@ -27,6 +32,7 @@ const RegistroMedicinaliForm = () => {
   const [pressione, setPressione] = useState("");
   const [glicemia, setGlicemia] = useState("");
   const [inserimenti, setInserimenti] = useState<InserimentoMedicinale[]>([]);
+  const [parametriVitali, setParametriVitali] = useState<ParametriVitali[]>([]);
 
   // Carica inserimenti dal localStorage al caricamento
   useEffect(() => {
@@ -44,6 +50,23 @@ const RegistroMedicinaliForm = () => {
   useEffect(() => {
     localStorage.setItem("inserimentiMedicinali", JSON.stringify(inserimenti));
   }, [inserimenti]);
+
+  // Carica parametri vitali dal localStorage
+  useEffect(() => {
+    const savedParametri = localStorage.getItem("parametriVitali");
+    if (savedParametri) {
+      try {
+        setParametriVitali(JSON.parse(savedParametri));
+      } catch (error) {
+        console.error("Errore nel caricamento parametri vitali:", error);
+      }
+    }
+  }, []);
+
+  // Salva parametri vitali nel localStorage quando cambiano
+  useEffect(() => {
+    localStorage.setItem("parametriVitali", JSON.stringify(parametriVitali));
+  }, [parametriVitali]);
 
   const aggiungiInserimento = () => {
     if (!nomeMedicinale.trim() || !date || !orario) {
@@ -82,12 +105,28 @@ const RegistroMedicinaliForm = () => {
   };
 
   const salvaGiornata = () => {
+    if (!date) return;
+    
+    const dataString = format(date, "yyyy-MM-dd");
+    
+    // Salva o aggiorna i parametri vitali per questa data
+    if (pressione || glicemia) {
+      setParametriVitali(prev => {
+        const existing = prev.filter(p => p.data !== dataString);
+        return [...existing, {
+          data: dataString,
+          pressione: pressione.trim(),
+          glicemia: glicemia.trim()
+        }];
+      });
+    }
+    
     toast({
       title: "Giornata salvata!",
       description: (
         <span>
-          Dati salvati per il {date ? format(date, "dd/MM/yyyy", { locale: it }) : ""}:<br />
-          {inserimenti.filter(i => i.data === (date ? format(date, "yyyy-MM-dd") : "")).length} inserimenti medicinali<br />
+          Dati salvati per il {format(date, "dd/MM/yyyy", { locale: it })}:<br />
+          {inserimentiOggi.length} inserimenti medicinali<br />
           <div>Pressione: <b>{pressione || "-"}</b></div>
           <div>Glicemia: <b>{glicemia || "-"}</b></div>
         </span>
