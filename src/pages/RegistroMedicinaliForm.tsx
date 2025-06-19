@@ -1,8 +1,9 @@
+
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon, Clock, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -87,7 +88,7 @@ const RegistroMedicinaliForm = () => {
     };
 
     setInserimenti(prev => [...prev, nuovoInserimento]);
-    setNomeMedicinale("");
+    // Non pulire il nome del medicinale per facilitare inserimenti multipli
     setOrario("");
     
     toast({
@@ -132,6 +133,11 @@ const RegistroMedicinaliForm = () => {
         </span>
       ),
     });
+  };
+
+  const pulisciCampi = () => {
+    setNomeMedicinale("");
+    setOrario("");
   };
 
   // Filtra inserimenti per la data selezionata
@@ -186,7 +192,10 @@ const RegistroMedicinaliForm = () => {
 
       {/* Inserimento Medicinale */}
       <div className="bg-white/50 p-4 rounded-lg">
-        <h3 className="font-semibold text-green-700 mb-3">Nuovo Inserimento</h3>
+        <h3 className="font-semibold text-green-700 mb-3 flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Nuovo Inserimento
+        </h3>
         
         <div className="space-y-3">
           <div>
@@ -217,12 +226,25 @@ const RegistroMedicinaliForm = () => {
             </div>
           </div>
 
-          <Button
-            onClick={aggiungiInserimento}
-            className="w-full bg-green-500 hover:bg-green-600 text-white"
-          >
-            Aggiungi Inserimento
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={aggiungiInserimento}
+              className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+            >
+              Aggiungi
+            </Button>
+            <Button
+              onClick={pulisciCampi}
+              variant="outline"
+              className="bg-white/70"
+            >
+              Pulisci
+            </Button>
+          </div>
+          
+          <div className="text-xs text-blue-600 bg-blue-50/80 p-2 rounded">
+            💡 Puoi inserire lo stesso medicinale più volte con orari diversi
+          </div>
         </div>
       </div>
 
