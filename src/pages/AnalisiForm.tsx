@@ -3,7 +3,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
-import { CalendarIcon, FileText, Upload, X, Activity } from "lucide-react";
+import { CalendarIcon, FileText, Upload, X, Activity, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -31,6 +31,7 @@ interface DocumentoAnalisi {
   data: string;
   tipo: string;
   dataCaricamento: string;
+  fileData: string; // Base64 del file per la memorizzazione
   timestamp: number;
 }
 
@@ -135,7 +136,7 @@ const AnalisiForm = () => {
     });
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -157,24 +158,66 @@ const AnalisiForm = () => {
       return;
     }
 
-    const nuovoDocumento: DocumentoAnalisi = {
-      id: Date.now(),
-      nome: file.name,
-      data: format(date, "yyyy-MM-dd"),
-      tipo: "PDF",
-      dataCaricamento: format(new Date(), "yyyy-MM-dd HH:mm", { locale: it }),
-      timestamp: Date.now()
-    };
+    try {
+      // Converti il file in base64 per la memorizzazione
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const fileData = e.target?.result as string;
+        
+        const nuovoDocumento: DocumentoAnalisi = {
+          id: Date.now(),
+          nome: file.name,
+          data: format(date, "yyyy-MM-dd"),
+          tipo: "PDF",
+          dataCaricamento: format(new Date(), "yyyy-MM-dd HH:mm", { locale: it }),
+          fileData: fileData,
+          timestamp: Date.now()
+        };
 
-    setDocumenti(prev => [...prev, nuovoDocumento]);
+        setDocumenti(prev => [...prev, nuovoDocumento]);
 
-    toast({
-      title: "Documento caricato!",
-      description: `${file.name} è stato salvato per il ${format(date, "dd/MM/yyyy", { locale: it })}`,
-    });
+        toast({
+          title: "Documento caricato!",
+          description: `${file.name} è stato salvato per il ${format(date, "dd/MM/yyyy", { locale: it })}`,
+        });
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Errore caricamento",
+        description: "Impossibile caricare il file.",
+      });
+    }
 
     // Reset input file
     event.target.value = "";
+  };
+
+  const apriDocumento = (documento: DocumentoAnalisi) => {
+    try {
+      // Crea un blob dal file base64 e aprilo in una nuova finestra
+      const byteCharacters = atob(documento.fileData.split(',')[1]);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      
+      toast({
+        title: "Documento aperto",
+        description: "Il PDF è stato aperto in una nuova finestra.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Errore apertura",
+        description: "Impossibile aprire il documento.",
+      });
+    }
   };
 
   const rimuoviDocumento = (id: number) => {
@@ -182,6 +225,14 @@ const AnalisiForm = () => {
     toast({
       title: "Documento rimosso",
       description: "Il documento è stato eliminato.",
+    });
+  };
+
+  const rimuoviAnalisi = (id: number) => {
+    setAnalisiSangue(prev => prev.filter(analisi => analisi.id !== id));
+    toast({
+      title: "Analisi rimossa",
+      description: "L'analisi è stata eliminata.",
     });
   };
 
@@ -359,7 +410,7 @@ const AnalisiForm = () => {
                   key={doc.id}
                   className="flex justify-between items-center bg-white/80 p-3 rounded-lg shadow-sm"
                 >
-                  <div>
+                  <div className="flex-1">
                     <div className="font-medium text-gray-800 text-sm">
                       {doc.nome}
                     </div>
@@ -367,19 +418,103 @@ const AnalisiForm = () => {
                       {format(new Date(doc.data), "dd/MM/yyyy", { locale: it })}
                     </div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => rimuoviDocumento(doc.id)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => apriDocumento(doc)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => rimuoviDocumento(doc.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Visualizzazione Analisi Salvate */}
+      {analisiSangue.length > 0 && (
+        <Card className="bg-white/50">
+          <CardHeader>
+            <CardTitle className="text-lg text-green-700 flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Analisi Salvate
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {analisiSangue
+              .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
+              .map((analisi) => (
+                <div
+                  key={analisi.id}
+                  className="bg-white/80 p-4 rounded-lg shadow-sm"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="font-medium text-gray-800">
+                      {format(new Date(analisi.data), "dd/MM/yyyy", { locale: it })}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => rimuoviAnalisi(analisi.id)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    {analisi.glicemia && (
+                      <div>
+                        <span className="text-gray-600">Glicemia:</span> {analisi.glicemia} mg/dl
+                      </div>
+                    )}
+                    {analisi.colesterolo && (
+                      <div>
+                        <span className="text-gray-600">Colesterolo:</span> {analisi.colesterolo} mg/dl
+                      </div>
+                    )}
+                    {analisi.trigliceridi && (
+                      <div>
+                        <span className="text-gray-600">Trigliceridi:</span> {analisi.trigliceridi} mg/dl
+                      </div>
+                    )}
+                    {analisi.emoglobina && (
+                      <div>
+                        <span className="text-gray-600">Emoglobina:</span> {analisi.emoglobina} g/dl
+                      </div>
+                    )}
+                    {analisi.globuliBianchi && (
+                      <div>
+                        <span className="text-gray-600">Globuli Bianchi:</span> {analisi.globuliBianchi}
+                      </div>
+                    )}
+                    {analisi.globuliRossi && (
+                      <div>
+                        <span className="text-gray-600">Globuli Rossi:</span> {analisi.globuliRossi}
+                      </div>
+                    )}
+                    {analisi.piastrine && (
+                      <div>
+                        <span className="text-gray-600">Piastrine:</span> {analisi.piastrine}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
