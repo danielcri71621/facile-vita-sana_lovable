@@ -1,0 +1,132 @@
+{
+  "common": {
+    "back": "Înapoi la Acasă",
+    "save": "Salvează",
+    "add": "Adaugă",
+    "remove": "Elimină",
+    "delete": "Șterge",
+    "clear": "Golește",
+    "open": "Deschide",
+    "close": "Închide",
+    "select": "Selectează",
+    "date": "Data",
+    "time": "Ora",
+    "yes": "Da",
+    "no": "Nu"
+  },
+  "home": {
+    "title": "Jurnal Zilnic de Sănătate",
+    "subtitle": "Înregistrează medicamentele și parametrii vitali în fiecare zi",
+    "dailyEntry": "Introducere Zilnică",
+    "viewProgress": "Vizualizează Evoluția"
+  },
+  "tabs": {
+    "daily": "Zilnic",
+    "registry": "Registru",
+    "progress": "Evoluție",
+    "analysis": "Analiză"
+  },
+  "medicine": {
+    "title": "Monitorizare Sănătate",
+    "name": "Nume medicament",
+    "namePlaceholder": "Ex: Aspirină",
+    "intakeTime": "Ora administrării",
+    "addNew": "Intrare Nouă",
+    "taken": "Luat",
+    "notTaken": "Neluat",
+    "waiting": "În așteptare",
+    "todayEntries": "Intrări de azi",
+    "scheduledMedicines": "Medicamente programate pentru azi",
+    "noScheduled": "Niciun medicament programat pentru azi",
+    "tipMultiple": "💡 Poți adăuga același medicament de mai multe ori cu ore diferite"
+  },
+  "registry": {
+    "title": "Introducere Zilnică Medicamente",
+    "selectDate": "Selectează data",
+    "chooseDate": "Alege o dată",
+    "saveDay": "Salvează Ziua",
+    "daySaved": "Zi salvată!",
+    "daySavedDesc": "Date salvate pentru {{date}}:\n{{count}} intrări medicamente\nTensiune: {{pressure}}\nGlicemie: {{glucose}}"
+  },
+  "vitals": {
+    "pressure": "Tensiune arterială (mmHg)",
+    "pressurePlaceholder": "Ex: 120/80",
+    "glucose": "Glicemie (mg/dl)",
+    "glucosePlaceholder": "Ex: 90",
+    "cholesterol": "Colesterol (mg/dl)",
+    "triglycerides": "Trigliceride (mg/dl)",
+    "hemoglobin": "Hemoglobină (g/dl)",
+    "whiteBloodCells": "Globule Albe",
+    "redBloodCells": "Globule Roșii",
+    "platelets": "Trombocite"
+  },
+  "analysis": {
+    "title": "Analize Medicale",
+    "bloodTests": "Analize de Sânge",
+    "documents": "Documente Analize",
+    "uploadPDF": "Încarcă PDF Analize",
+    "uploadedDocuments": "Documente încărcate:",
+    "savedAnalysis": "Analize Salvate",
+    "saveBloodTests": "Salvează Analize de Sânge"
+  },
+  "chart": {
+    "weeklyProgress": "Evoluție săptămânală",
+    "pressure": "Tensiune",
+    "glucose": "Glicemie",
+    "medicines": "Medicamente",
+    "noData": "Nu există date disponibile",
+    "noDataDesc": "Începe să înregistrezi datele pentru a vizualiza graficele.",
+    "description": "Acest grafic arată evoluția parametrilor tăi vitali în ultimele 7 zile"
+  },
+  "notifications": {
+    "enable": "Activează notificări",
+    "timeToTake": "E timpul să iei:",
+    "medicineAdded": "Medicament adăugat!",
+    "medicineAddedDesc": "{{name}} a fost adăugat în listă",
+    "medicineRemoved": "Medicament eliminat",
+    "medicineRemovedDesc": "Medicamentul a fost șters",
+    "medicineTaken": "✓ Luat",
+    "medicineTakenDesc": "{{name}} marcat ca luat",
+    "medicineNotTaken": "✗ Neluat",
+    "medicineNotTakenDesc": "{{name}} marcat ca neluat",
+    "entrySaved": "Intrare salvată!",
+    "entrySavedDesc": "{{name}} înregistrat pentru {{date}} la {{time}}",
+    "entryRemoved": "Intrare eliminată",
+    "entryRemovedDesc": "Intrarea a fost ștearsă"
+  },
+  "errors": {
+    "missingFields": "Câmpuri lipsă",
+    "completeFields": "Completează toate câmpurile: medicament, dată și oră.",
+    "missingDate": "Dată lipsă",
+    "selectDate": "Selectează o dată",
+    "selectDateAnalysis": "Selectează o dată pentru analize.",
+    "selectDateDocument": "Selectează o dată pentru document.",
+    "noData": "Nu s-au introdus date",
+    "insertValue": "Introdu cel puțin o valoare pentru analize.",
+    "unsupportedFormat": "Format nesuportat",
+    "pdfOnly": "Încarcă doar fișiere PDF.",
+    "uploadError": "Eroare la încărcare",
+    "cannotUpload": "Nu se poate încărca fișierul.",
+    "openError": "Eroare la deschidere",
+    "cannotOpen": "Nu se poate deschide documentul. Asigură-te că ai o aplicație PDF instalată."
+  },
+  "success": {
+    "documentUploaded": "Document încărcat!",
+    "documentUploadedDesc": "{{name}} a fost salvat pentru {{date}}",
+    "documentOpened": "Document deschis",
+    "documentOpenedApp": "PDF-ul a fost deschis cu aplicația implicită.",
+    "documentOpenedBrowser": "PDF-ul a fost deschis într-o fereastră nouă.",
+    "documentRemoved": "Document eliminat",
+    "documentRemovedDesc": "Documentul a fost șters.",
+    "analysisSaved": "Analize salvate!",
+    "analysisSavedDesc": "Date salvate pentru {{date}}",
+    "analysisRemoved": "Analiză eliminată",
+    "analysisRemovedDesc": "Analiza a fost ștearsă."
+  },
+  "language": {
+    "select": "Limbă",
+    "italian": "Italiano",
+    "english": "English",
+    "romanian": "Română"
+  }
+}

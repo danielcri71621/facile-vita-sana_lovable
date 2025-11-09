@@ -1,0 +1,132 @@
+{
+  "common": {
+    "back": "Torna alla Home",
+    "save": "Salva",
+    "add": "Aggiungi",
+    "remove": "Rimuovi",
+    "delete": "Elimina",
+    "clear": "Pulisci",
+    "open": "Apri",
+    "close": "Chiudi",
+    "select": "Seleziona",
+    "date": "Data",
+    "time": "Orario",
+    "yes": "Sì",
+    "no": "No"
+  },
+  "home": {
+    "title": "Diario Salute Giornaliero",
+    "subtitle": "Registra i tuoi medicinali e parametri vitali ogni giorno",
+    "dailyEntry": "Inserimento Giornaliero",
+    "viewProgress": "Visualizza Andamento"
+  },
+  "tabs": {
+    "daily": "Quotidiana",
+    "registry": "Registro",
+    "progress": "Andamento",
+    "analysis": "Analisi"
+  },
+  "medicine": {
+    "title": "Tracciamento Salute",
+    "name": "Nome medicinale",
+    "namePlaceholder": "Es: Aspirina",
+    "intakeTime": "Orario assunzione",
+    "addNew": "Nuovo Inserimento",
+    "taken": "Preso",
+    "notTaken": "Non preso",
+    "waiting": "In attesa",
+    "todayEntries": "Inserimenti di oggi",
+    "scheduledMedicines": "Medicinali programmati per oggi",
+    "noScheduled": "Nessun medicinale programmato per oggi",
+    "tipMultiple": "💡 Puoi inserire lo stesso medicinale più volte con orari diversi"
+  },
+  "registry": {
+    "title": "Inserimento Giornaliero Medicinali",
+    "selectDate": "Seleziona data",
+    "chooseDate": "Scegli una data",
+    "saveDay": "Salva Giornata",
+    "daySaved": "Giornata salvata!",
+    "daySavedDesc": "Dati salvati per il {{date}}:\n{{count}} inserimenti medicinali\nPressione: {{pressure}}\nGlicemia: {{glucose}}"
+  },
+  "vitals": {
+    "pressure": "Pressione sanguigna (mmHg)",
+    "pressurePlaceholder": "Es: 120/80",
+    "glucose": "Glicemia (mg/dl)",
+    "glucosePlaceholder": "Es: 90",
+    "cholesterol": "Colesterolo (mg/dl)",
+    "triglycerides": "Trigliceridi (mg/dl)",
+    "hemoglobin": "Emoglobina (g/dl)",
+    "whiteBloodCells": "Globuli Bianchi",
+    "redBloodCells": "Globuli Rossi",
+    "platelets": "Piastrine"
+  },
+  "analysis": {
+    "title": "Analisi Mediche",
+    "bloodTests": "Analisi del Sangue",
+    "documents": "Documenti Analisi",
+    "uploadPDF": "Carica PDF Analisi",
+    "uploadedDocuments": "Documenti caricati:",
+    "savedAnalysis": "Analisi Salvate",
+    "saveBloodTests": "Salva Analisi del Sangue"
+  },
+  "chart": {
+    "weeklyProgress": "Andamento settimanale",
+    "pressure": "Pressione",
+    "glucose": "Glicemia",
+    "medicines": "Medicinali",
+    "noData": "Nessun dato disponibile",
+    "noDataDesc": "Inizia a registrare i tuoi dati per visualizzare i grafici.",
+    "description": "Questo grafico mostra l'andamento dei tuoi parametri vitali negli ultimi 7 giorni"
+  },
+  "notifications": {
+    "enable": "Abilita notifiche",
+    "timeToTake": "È ora di prendere:",
+    "medicineAdded": "Medicinale aggiunto!",
+    "medicineAddedDesc": "{{name}} è stato aggiunto alla lista",
+    "medicineRemoved": "Medicinale rimosso",
+    "medicineRemovedDesc": "Il medicinale è stato eliminato",
+    "medicineTaken": "✓ Preso",
+    "medicineTakenDesc": "{{name}} segnato come preso",
+    "medicineNotTaken": "✗ Non preso",
+    "medicineNotTakenDesc": "{{name}} segnato come non preso",
+    "entrySaved": "Inserimento salvato!",
+    "entrySavedDesc": "{{name}} registrato per il {{date}} alle {{time}}",
+    "entryRemoved": "Inserimento rimosso",
+    "entryRemovedDesc": "L'inserimento è stato eliminato"
+  },
+  "errors": {
+    "missingFields": "Campi mancanti",
+    "completeFields": "Completa tutti i campi: medicinale, data e orario.",
+    "missingDate": "Data mancante",
+    "selectDate": "Seleziona una data",
+    "selectDateAnalysis": "Seleziona una data per le analisi.",
+    "selectDateDocument": "Seleziona una data per il documento.",
+    "noData": "Nessun dato inserito",
+    "insertValue": "Inserisci almeno un valore per le analisi.",
+    "unsupportedFormat": "Formato non supportato",
+    "pdfOnly": "Carica solo file PDF.",
+    "uploadError": "Errore caricamento",
+    "cannotUpload": "Impossibile caricare il file.",
+    "openError": "Errore apertura",
+    "cannotOpen": "Impossibile aprire il documento. Assicurati di avere un'app PDF installata."
+  },
+  "success": {
+    "documentUploaded": "Documento caricato!",
+    "documentUploadedDesc": "{{name}} è stato salvato per il {{date}}",
+    "documentOpened": "Documento aperto",
+    "documentOpenedApp": "Il PDF è stato aperto con l'app predefinita.",
+    "documentOpenedBrowser": "Il PDF è stato aperto in una nuova finestra.",
+    "documentRemoved": "Documento rimosso",
+    "documentRemovedDesc": "Il documento è stato eliminato.",
+    "analysisSaved": "Analisi salvate!",
+    "analysisSavedDesc": "Dati salvati per il {{date}}",
+    "analysisRemoved": "Analisi rimossa",
+    "analysisRemovedDesc": "L'analisi è stata eliminata."
+  },
+  "language": {
+    "select": "Lingua",
+    "italian": "Italiano",
+    "english": "English",
+    "romanian": "Română"
+  }
+}

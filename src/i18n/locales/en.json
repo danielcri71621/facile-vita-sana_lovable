@@ -1,0 +1,132 @@
+{
+  "common": {
+    "back": "Back to Home",
+    "save": "Save",
+    "add": "Add",
+    "remove": "Remove",
+    "delete": "Delete",
+    "clear": "Clear",
+    "open": "Open",
+    "close": "Close",
+    "select": "Select",
+    "date": "Date",
+    "time": "Time",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "home": {
+    "title": "Daily Health Diary",
+    "subtitle": "Track your medications and vital signs every day",
+    "dailyEntry": "Daily Entry",
+    "viewProgress": "View Progress"
+  },
+  "tabs": {
+    "daily": "Daily",
+    "registry": "Registry",
+    "progress": "Progress",
+    "analysis": "Analysis"
+  },
+  "medicine": {
+    "title": "Health Tracking",
+    "name": "Medicine name",
+    "namePlaceholder": "e.g., Aspirin",
+    "intakeTime": "Intake time",
+    "addNew": "New Entry",
+    "taken": "Taken",
+    "notTaken": "Not taken",
+    "waiting": "Waiting",
+    "todayEntries": "Today's entries",
+    "scheduledMedicines": "Today's scheduled medicines",
+    "noScheduled": "No medicines scheduled for today",
+    "tipMultiple": "💡 You can add the same medicine multiple times with different times"
+  },
+  "registry": {
+    "title": "Daily Medicine Entry",
+    "selectDate": "Select date",
+    "chooseDate": "Choose a date",
+    "saveDay": "Save Day",
+    "daySaved": "Day saved!",
+    "daySavedDesc": "Data saved for {{date}}:\n{{count}} medicine entries\nBlood Pressure: {{pressure}}\nGlucose: {{glucose}}"
+  },
+  "vitals": {
+    "pressure": "Blood pressure (mmHg)",
+    "pressurePlaceholder": "e.g., 120/80",
+    "glucose": "Blood glucose (mg/dl)",
+    "glucosePlaceholder": "e.g., 90",
+    "cholesterol": "Cholesterol (mg/dl)",
+    "triglycerides": "Triglycerides (mg/dl)",
+    "hemoglobin": "Hemoglobin (g/dl)",
+    "whiteBloodCells": "White Blood Cells",
+    "redBloodCells": "Red Blood Cells",
+    "platelets": "Platelets"
+  },
+  "analysis": {
+    "title": "Medical Analysis",
+    "bloodTests": "Blood Tests",
+    "documents": "Analysis Documents",
+    "uploadPDF": "Upload Analysis PDF",
+    "uploadedDocuments": "Uploaded documents:",
+    "savedAnalysis": "Saved Analysis",
+    "saveBloodTests": "Save Blood Tests"
+  },
+  "chart": {
+    "weeklyProgress": "Weekly Progress",
+    "pressure": "Pressure",
+    "glucose": "Glucose",
+    "medicines": "Medicines",
+    "noData": "No data available",
+    "noDataDesc": "Start recording your data to view the charts.",
+    "description": "This chart shows the trend of your vital signs over the last 7 days"
+  },
+  "notifications": {
+    "enable": "Enable notifications",
+    "timeToTake": "Time to take:",
+    "medicineAdded": "Medicine added!",
+    "medicineAddedDesc": "{{name}} has been added to the list",
+    "medicineRemoved": "Medicine removed",
+    "medicineRemovedDesc": "The medicine has been deleted",
+    "medicineTaken": "✓ Taken",
+    "medicineTakenDesc": "{{name}} marked as taken",
+    "medicineNotTaken": "✗ Not taken",
+    "medicineNotTakenDesc": "{{name}} marked as not taken",
+    "entrySaved": "Entry saved!",
+    "entrySavedDesc": "{{name}} recorded for {{date}} at {{time}}",
+    "entryRemoved": "Entry removed",
+    "entryRemovedDesc": "The entry has been deleted"
+  },
+  "errors": {
+    "missingFields": "Missing fields",
+    "completeFields": "Complete all fields: medicine, date and time.",
+    "missingDate": "Missing date",
+    "selectDate": "Select a date",
+    "selectDateAnalysis": "Select a date for the analysis.",
+    "selectDateDocument": "Select a date for the document.",
+    "noData": "No data entered",
+    "insertValue": "Enter at least one value for the analysis.",
+    "unsupportedFormat": "Unsupported format",
+    "pdfOnly": "Upload PDF files only.",
+    "uploadError": "Upload error",
+    "cannotUpload": "Unable to upload the file.",
+    "openError": "Open error",
+    "cannotOpen": "Unable to open the document. Make sure you have a PDF app installed."
+  },
+  "success": {
+    "documentUploaded": "Document uploaded!",
+    "documentUploadedDesc": "{{name}} has been saved for {{date}}",
+    "documentOpened": "Document opened",
+    "documentOpenedApp": "The PDF has been opened with the default app.",
+    "documentOpenedBrowser": "The PDF has been opened in a new window.",
+    "documentRemoved": "Document removed",
+    "documentRemovedDesc": "The document has been deleted.",
+    "analysisSaved": "Analysis saved!",
+    "analysisSavedDesc": "Data saved for {{date}}",
+    "analysisRemoved": "Analysis removed",
+    "analysisRemovedDesc": "The analysis has been deleted."
+  },
+  "language": {
+    "select": "Language",
+    "italian": "Italiano",
+    "english": "English",
+    "romanian": "Română"
+  }
+}
