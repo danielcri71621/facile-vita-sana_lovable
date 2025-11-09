@@ -2,8 +2,9 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { it } from "date-fns/locale";
+import { it, enUS, ro } from "date-fns/locale";
 import { CalendarIcon, Clock, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -27,6 +28,7 @@ interface ParametriVitali {
 }
 
 const RegistroMedicinaliForm = () => {
+  const { t, i18n } = useTranslation();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [orario, setOrario] = useState("");
   const [nomeMedicinale, setNomeMedicinale] = useState("");
@@ -34,6 +36,14 @@ const RegistroMedicinaliForm = () => {
   const [glicemia, setGlicemia] = useState("");
   const [inserimenti, setInserimenti] = useState<InserimentoMedicinale[]>([]);
   const [parametriVitali, setParametriVitali] = useState<ParametriVitali[]>([]);
+
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'en': return enUS;
+      case 'ro': return ro;
+      default: return it;
+    }
+  };
 
   // Carica inserimenti dal localStorage al caricamento
   useEffect(() => {
@@ -73,8 +83,8 @@ const RegistroMedicinaliForm = () => {
     if (!nomeMedicinale.trim() || !date || !orario) {
       toast({
         variant: "destructive",
-        title: "Campi mancanti",
-        description: "Completa tutti i campi: medicinale, data e orario.",
+        title: t('errors.missingFields'),
+        description: t('errors.completeFields'),
       });
       return;
     }
@@ -92,16 +102,20 @@ const RegistroMedicinaliForm = () => {
     setOrario("");
     
     toast({
-      title: "Inserimento salvato!",
-      description: `${nomeMedicinale} registrato per il ${format(date, "dd/MM/yyyy", { locale: it })} alle ${orario}`,
+      title: t('notifications.entrySaved'),
+      description: t('notifications.entrySavedDesc', { 
+        name: nomeMedicinale, 
+        date: format(date, "dd/MM/yyyy", { locale: getLocale() }), 
+        time: orario 
+      }),
     });
   };
 
   const rimuoviInserimento = (id: number) => {
     setInserimenti(prev => prev.filter(item => item.id !== id));
     toast({
-      title: "Inserimento rimosso",
-      description: "L'inserimento è stato eliminato.",
+      title: t('notifications.entryRemoved'),
+      description: t('notifications.entryRemovedDesc'),
     });
   };
 
@@ -123,15 +137,13 @@ const RegistroMedicinaliForm = () => {
     }
     
     toast({
-      title: "Giornata salvata!",
-      description: (
-        <span>
-          Dati salvati per il {format(date, "dd/MM/yyyy", { locale: it })}:<br />
-          {inserimentiOggi.length} inserimenti medicinali<br />
-          <div>Pressione: <b>{pressione || "-"}</b></div>
-          <div>Glicemia: <b>{glicemia || "-"}</b></div>
-        </span>
-      ),
+      title: t('registry.daySaved'),
+      description: t('registry.daySavedDesc', {
+        date: format(date, "dd/MM/yyyy", { locale: getLocale() }),
+        count: inserimentiOggi.length,
+        pressure: pressione || "-",
+        glucose: glicemia || "-"
+      }),
     });
   };
 
@@ -156,13 +168,13 @@ const RegistroMedicinaliForm = () => {
       style={{ boxSizing: "border-box" }}
     >
       <h2 className="text-xl font-bold text-center text-blue-800 mb-4">
-        Inserimento Giornaliero Medicinali
+        {t('registry.title')}
       </h2>
 
       {/* Selezione Data */}
       <div>
         <label className="block mb-2 text-base sm:text-sm font-medium text-cyan-800">
-          Seleziona data
+          {t('registry.selectDate')}
         </label>
         <Popover>
           <PopoverTrigger asChild>
@@ -174,7 +186,7 @@ const RegistroMedicinaliForm = () => {
               )}
             >
               <CalendarIcon className="mr-2 h-5 w-5 text-cyan-600" />
-              {date ? format(date, "PPP", { locale: it }) : <span>Scegli una data</span>}
+              {date ? format(date, "PPP", { locale: getLocale() }) : <span>{t('registry.chooseDate')}</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -184,7 +196,7 @@ const RegistroMedicinaliForm = () => {
               onSelect={setDate}
               className={cn("p-3 pointer-events-auto")}
               initialFocus
-              locale={it}
+              locale={getLocale()}
             />
           </PopoverContent>
         </Popover>
@@ -194,17 +206,17 @@ const RegistroMedicinaliForm = () => {
       <div className="bg-white/50 p-4 rounded-lg">
         <h3 className="font-semibold text-green-700 mb-3 flex items-center gap-2">
           <Plus className="h-4 w-4" />
-          Nuovo Inserimento
+          {t('medicine.addNew')}
         </h3>
         
         <div className="space-y-3">
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700">
-              Nome medicinale
+              {t('medicine.name')}
             </label>
             <Input
               type="text"
-              placeholder="Es: Aspirina"
+              placeholder={t('medicine.namePlaceholder')}
               value={nomeMedicinale}
               onChange={(e) => setNomeMedicinale(e.target.value)}
               className="bg-white/70"
@@ -213,7 +225,7 @@ const RegistroMedicinaliForm = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700">
-              Orario assunzione
+              {t('medicine.intakeTime')}
             </label>
             <div className="relative">
               <Input
@@ -231,19 +243,19 @@ const RegistroMedicinaliForm = () => {
               onClick={aggiungiInserimento}
               className="flex-1 bg-green-500 hover:bg-green-600 text-white"
             >
-              Aggiungi
+              {t('common.add')}
             </Button>
             <Button
               onClick={pulisciCampi}
               variant="outline"
               className="bg-white/70"
             >
-              Pulisci
+              {t('common.clear')}
             </Button>
           </div>
           
           <div className="text-xs text-blue-600 bg-blue-50/80 p-2 rounded">
-            💡 Puoi inserire lo stesso medicinale più volte con orari diversi
+            {t('medicine.tipMultiple')}
           </div>
         </div>
       </div>
@@ -252,7 +264,7 @@ const RegistroMedicinaliForm = () => {
       {inserimentiOggi.length > 0 && (
         <div className="bg-white/50 p-4 rounded-lg">
           <h3 className="font-semibold text-blue-700 mb-3">
-            Inserimenti di oggi ({inserimentiOggi.length})
+            {t('medicine.todayEntries')} ({inserimentiOggi.length})
           </h3>
           <div className="space-y-2">
             {inserimentiOggi.map((inserimento) => (
@@ -265,7 +277,7 @@ const RegistroMedicinaliForm = () => {
                     {inserimento.nomeMedicinale}
                   </div>
                   <div className="text-sm text-gray-600">
-                    ore {inserimento.orario}
+                    {t('common.time')} {inserimento.orario}
                   </div>
                 </div>
                 <Button
@@ -273,7 +285,7 @@ const RegistroMedicinaliForm = () => {
                   variant="destructive"
                   onClick={() => rimuoviInserimento(inserimento.id)}
                 >
-                  Rimuovi
+                  {t('common.remove')}
                 </Button>
               </div>
             ))}
@@ -285,11 +297,11 @@ const RegistroMedicinaliForm = () => {
       <div className="space-y-3">
         <div>
           <label className="block text-base sm:text-sm font-medium mb-1 text-blue-900">
-            Pressione sanguigna (mmHg)
+            {t('vitals.pressure')}
           </label>
           <Input
             type="text"
-            placeholder="Es: 120/80"
+            placeholder={t('vitals.pressurePlaceholder')}
             value={pressione}
             onChange={(e) => setPressione(e.target.value)}
             className="bg-blue-50/50 focus:bg-white/90"
@@ -298,11 +310,11 @@ const RegistroMedicinaliForm = () => {
         
         <div>
           <label className="block text-base sm:text-sm font-medium mb-1 text-green-900">
-            Glicemia (mg/dl)
+            {t('vitals.glucose')}
           </label>
           <Input
             type="number"
-            placeholder="Es: 90"
+            placeholder={t('vitals.glucosePlaceholder')}
             value={glicemia}
             onChange={(e) => setGlicemia(e.target.value)}
             className="bg-green-50/50 focus:bg-white/90"
@@ -314,7 +326,7 @@ const RegistroMedicinaliForm = () => {
         className="w-full text-lg sm:text-base py-3 rounded-xl font-semibold shadow-lg bg-gradient-to-tr from-cyan-400 via-blue-400 to-green-300 text-white hover:from-cyan-500 hover:to-green-400 hover:scale-[1.03] transition-all duration-300"
         onClick={salvaGiornata}
       >
-        Salva Giornata
+        {t('registry.saveDay')}
       </Button>
       
       <Toaster />

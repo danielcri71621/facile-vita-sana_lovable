@@ -1,8 +1,9 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { it } from "date-fns/locale";
+import { it, enUS, ro } from "date-fns/locale";
 import { CalendarIcon, FileText, Upload, X, Activity, Eye, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -38,6 +39,7 @@ interface DocumentoAnalisi {
 }
 
 const AnalisiForm = () => {
+  const { t, i18n } = useTranslation();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [analisiSangue, setAnalisiSangue] = useState<AnalisiSangue[]>([]);
   const [documenti, setDocumenti] = useState<DocumentoAnalisi[]>([]);
@@ -50,6 +52,14 @@ const AnalisiForm = () => {
   const [globuliBianchi, setGlobuliBianchi] = useState("");
   const [globuliRossi, setGlobuliRossi] = useState("");
   const [piastrine, setPiastrine] = useState("");
+
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'en': return enUS;
+      case 'ro': return ro;
+      default: return it;
+    }
+  };
 
   // Carica dati dal localStorage
   useEffect(() => {
@@ -85,8 +95,8 @@ const AnalisiForm = () => {
     if (!date) {
       toast({
         variant: "destructive",
-        title: "Data mancante",
-        description: "Seleziona una data per le analisi.",
+        title: t('errors.missingDate'),
+        description: t('errors.selectDateAnalysis'),
       });
       return;
     }
@@ -97,8 +107,8 @@ const AnalisiForm = () => {
     if (!hasData) {
       toast({
         variant: "destructive",
-        title: "Nessun dato inserito",
-        description: "Inserisci almeno un valore per le analisi.",
+        title: t('errors.noData'),
+        description: t('errors.insertValue'),
       });
       return;
     }
@@ -133,8 +143,8 @@ const AnalisiForm = () => {
     setPiastrine("");
 
     toast({
-      title: "Analisi salvate!",
-      description: `Dati salvati per il ${format(date, "dd/MM/yyyy", { locale: it })}`,
+      title: t('success.analysisSaved'),
+      description: t('success.analysisSavedDesc', { date: format(date, "dd/MM/yyyy", { locale: getLocale() }) }),
     });
   };
 
@@ -145,8 +155,8 @@ const AnalisiForm = () => {
     if (file.type !== "application/pdf") {
       toast({
         variant: "destructive",
-        title: "Formato non supportato",
-        description: "Carica solo file PDF.",
+        title: t('errors.unsupportedFormat'),
+        description: t('errors.pdfOnly'),
       });
       return;
     }
@@ -154,8 +164,8 @@ const AnalisiForm = () => {
     if (!date) {
       toast({
         variant: "destructive",
-        title: "Data mancante",
-        description: "Seleziona una data per il documento.",
+        title: t('errors.missingDate'),
+        description: t('errors.selectDateDocument'),
       });
       return;
     }
@@ -171,7 +181,7 @@ const AnalisiForm = () => {
           nome: file.name,
           data: format(date, "yyyy-MM-dd"),
           tipo: "PDF",
-          dataCaricamento: format(new Date(), "yyyy-MM-dd HH:mm", { locale: it }),
+          dataCaricamento: format(new Date(), "yyyy-MM-dd HH:mm", { locale: getLocale() }),
           fileData: fileData,
           timestamp: Date.now()
         };
@@ -179,16 +189,16 @@ const AnalisiForm = () => {
         setDocumenti(prev => [...prev, nuovoDocumento]);
 
         toast({
-          title: "Documento caricato!",
-          description: `${file.name} è stato salvato per il ${format(date, "dd/MM/yyyy", { locale: it })}`,
+          title: t('success.documentUploaded'),
+          description: t('success.documentUploadedDesc', { name: file.name, date: format(date, "dd/MM/yyyy", { locale: getLocale() }) }),
         });
       };
       reader.readAsDataURL(file);
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Errore caricamento",
-        description: "Impossibile caricare il file.",
+        title: t('errors.uploadError'),
+        description: t('errors.cannotUpload'),
       });
     }
 
@@ -231,8 +241,8 @@ const AnalisiForm = () => {
         await FileOpener.open(result.uri, 'application/pdf');
         
         toast({
-          title: "Documento aperto",
-          description: "Il PDF è stato aperto con l'app predefinita.",
+          title: t('success.documentOpened'),
+          description: t('success.documentOpenedApp'),
         });
         
       } else {
@@ -249,16 +259,16 @@ const AnalisiForm = () => {
         window.open(url, '_blank');
         
         toast({
-          title: "Documento aperto",
-          description: "Il PDF è stato aperto in una nuova finestra.",
+          title: t('success.documentOpened'),
+          description: t('success.documentOpenedBrowser'),
         });
       }
     } catch (error) {
       console.error("Errore nell'apertura del documento:", error);
       toast({
         variant: "destructive",
-        title: "Errore apertura",
-        description: "Impossibile aprire il documento. Assicurati di avere un'app PDF installata.",
+        title: t('errors.openError'),
+        description: t('errors.cannotOpen'),
       });
     }
   };
@@ -266,29 +276,29 @@ const AnalisiForm = () => {
   const rimuoviDocumento = (id: number) => {
     setDocumenti(prev => prev.filter(doc => doc.id !== id));
     toast({
-      title: "Documento rimosso",
-      description: "Il documento è stato eliminato.",
+      title: t('success.documentRemoved'),
+      description: t('success.documentRemovedDesc'),
     });
   };
 
   const rimuoviAnalisi = (id: number) => {
     setAnalisiSangue(prev => prev.filter(analisi => analisi.id !== id));
     toast({
-      title: "Analisi rimossa",
-      description: "L'analisi è stata eliminata.",
+      title: t('success.analysisRemoved'),
+      description: t('success.analysisRemovedDesc'),
     });
   };
 
   return (
     <div className="w-full max-w-xl mx-auto bg-gradient-to-br from-purple-100 via-pink-100 to-orange-100 p-5 rounded-xl shadow-2xl space-y-6">
       <h2 className="text-xl font-bold text-center text-purple-800 mb-4">
-        Analisi Mediche
+        {t('analysis.title')}
       </h2>
 
       {/* Selezione Data */}
       <div>
         <label className="block mb-2 text-base font-medium text-purple-800">
-          Seleziona data
+          {t('registry.selectDate')}
         </label>
         <Popover>
           <PopoverTrigger asChild>
@@ -300,7 +310,7 @@ const AnalisiForm = () => {
               )}
             >
               <CalendarIcon className="mr-2 h-5 w-5 text-purple-600" />
-              {date ? format(date, "PPP", { locale: it }) : <span>Scegli una data</span>}
+              {date ? format(date, "PPP", { locale: getLocale() }) : <span>{t('registry.chooseDate')}</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -310,7 +320,7 @@ const AnalisiForm = () => {
               onSelect={setDate}
               className="p-3"
               initialFocus
-              locale={it}
+              locale={getLocale()}
             />
           </PopoverContent>
         </Popover>
@@ -321,14 +331,14 @@ const AnalisiForm = () => {
         <CardHeader>
           <CardTitle className="text-lg text-red-700 flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Analisi del Sangue
+            {t('analysis.bloodTests')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700">
-                Glicemia (mg/dl)
+                {t('vitals.glucose')}
               </label>
               <Input
                 type="number"
@@ -340,7 +350,7 @@ const AnalisiForm = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700">
-                Colesterolo (mg/dl)
+                {t('vitals.cholesterol')}
               </label>
               <Input
                 type="number"
@@ -352,7 +362,7 @@ const AnalisiForm = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700">
-                Trigliceridi (mg/dl)
+                {t('vitals.triglycerides')}
               </label>
               <Input
                 type="number"
@@ -364,7 +374,7 @@ const AnalisiForm = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700">
-                Emoglobina (g/dl)
+                {t('vitals.hemoglobin')}
               </label>
               <Input
                 type="number"
@@ -376,7 +386,7 @@ const AnalisiForm = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700">
-                Globuli Bianchi
+                {t('vitals.whiteBloodCells')}
               </label>
               <Input
                 type="number"
@@ -388,7 +398,7 @@ const AnalisiForm = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700">
-                Globuli Rossi
+                {t('vitals.redBloodCells')}
               </label>
               <Input
                 type="number"
@@ -401,7 +411,7 @@ const AnalisiForm = () => {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700">
-              Piastrine
+              {t('vitals.platelets')}
             </label>
             <Input
               type="number"
@@ -415,7 +425,7 @@ const AnalisiForm = () => {
             onClick={salvaAnalisi}
             className="w-full bg-red-500 hover:bg-red-600 text-white"
           >
-            Salva Analisi del Sangue
+            {t('analysis.saveBloodTests')}
           </Button>
         </CardContent>
       </Card>
@@ -425,13 +435,13 @@ const AnalisiForm = () => {
         <CardHeader>
           <CardTitle className="text-lg text-orange-700 flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Documenti Analisi
+            {t('analysis.documents')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              Carica PDF Analisi
+              {t('analysis.uploadPDF')}
             </label>
             <div className="flex items-center gap-2">
               <Input
@@ -447,7 +457,7 @@ const AnalisiForm = () => {
           {/* Lista Documenti */}
           {documenti.length > 0 && (
             <div className="space-y-2">
-              <h4 className="font-medium text-gray-700">Documenti caricati:</h4>
+              <h4 className="font-medium text-gray-700">{t('analysis.uploadedDocuments')}</h4>
               {documenti.map((doc) => (
                 <div
                   key={doc.id}
@@ -458,7 +468,7 @@ const AnalisiForm = () => {
                       {doc.nome}
                     </div>
                     <div className="text-xs text-gray-600">
-                      {format(new Date(doc.data), "dd/MM/yyyy", { locale: it })}
+                      {format(new Date(doc.data), "dd/MM/yyyy", { locale: getLocale() })}
                     </div>
                   </div>
                   <div className="flex gap-1">
@@ -492,7 +502,7 @@ const AnalisiForm = () => {
           <CardHeader>
             <CardTitle className="text-lg text-green-700 flex items-center gap-2">
               <Activity className="h-5 w-5" />
-              Analisi Salvate
+              {t('analysis.savedAnalysis')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -505,7 +515,7 @@ const AnalisiForm = () => {
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div className="font-medium text-gray-800">
-                      {format(new Date(analisi.data), "dd/MM/yyyy", { locale: it })}
+                      {format(new Date(analisi.data), "dd/MM/yyyy", { locale: getLocale() })}
                     </div>
                     <Button
                       size="sm"

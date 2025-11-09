@@ -2,7 +2,8 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { format, subDays, parseISO } from "date-fns";
-import { it } from "date-fns/locale";
+import { it, enUS, ro } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 import {
   ChartContainer,
   ChartTooltip,
@@ -35,7 +36,16 @@ const chartConfig = {
 };
 
 const GraficoMedicinali = () => {
+  const { t, i18n } = useTranslation();
   const [datiGrafico, setDatiGrafico] = useState<any[]>([]);
+
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'en': return enUS;
+      case 'ro': return ro;
+      default: return it;
+    }
+  };
 
   useEffect(() => {
     // Carica i dati dal localStorage
@@ -68,7 +78,7 @@ const GraficoMedicinali = () => {
     for (let i = 6; i >= 0; i--) {
       const data = subDays(oggi, i);
       const dataString = format(data, "yyyy-MM-dd");
-      const giornoCorto = format(data, "EEE", { locale: it });
+      const giornoCorto = format(data, "EEE", { locale: getLocale() });
       
       // Trova i parametri per questa data
       const parametriGiorno = parametri.find(p => p.data === dataString);
@@ -109,13 +119,13 @@ const GraficoMedicinali = () => {
     return (
       <div className="h-[340px] w-full">
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <ChartBar className="h-5 w-5" /> Andamento pressione e glicemia
+          <ChartBar className="h-5 w-5" /> {t('chart.weeklyProgress')}
         </h2>
         <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
           <div className="text-center text-gray-500">
             <ChartBar className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p className="text-lg font-medium">Nessun dato disponibile</p>
-            <p className="text-sm">Inizia a registrare i tuoi parametri vitali per vedere il grafico</p>
+            <p className="text-lg font-medium">{t('chart.noData')}</p>
+            <p className="text-sm">{t('chart.noDataDesc')}</p>
           </div>
         </div>
       </div>
@@ -125,7 +135,7 @@ const GraficoMedicinali = () => {
   return (
     <div className="h-[340px] w-full">
       <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-        <ChartBar className="h-5 w-5" /> Andamento pressione e glicemia
+        <ChartBar className="h-5 w-5" /> {t('chart.weeklyProgress')}
       </h2>
       <ChartContainer config={chartConfig} className="h-[85%]">
         <LineChart data={datiGrafico}>
@@ -137,7 +147,7 @@ const GraficoMedicinali = () => {
             type="monotone" 
             dataKey="pressione" 
             stroke="#2563eb" 
-            name="Pressione (sistolica)"
+            name={t('chart.pressure')}
             connectNulls={false}
             dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
           />
@@ -145,14 +155,14 @@ const GraficoMedicinali = () => {
             type="monotone" 
             dataKey="glicemia" 
             stroke="#16a34a" 
-            name="Glicemia (mg/dl)"
+            name={t('chart.glucose')}
             connectNulls={false}
             dot={{ fill: "#16a34a", strokeWidth: 2, r: 4 }}
           />
         </LineChart>
       </ChartContainer>
       <div className="text-xs text-muted-foreground mt-3">
-        Dati degli ultimi 7 giorni basati sui tuoi inserimenti
+        {t('chart.description')}
       </div>
     </div>
   );

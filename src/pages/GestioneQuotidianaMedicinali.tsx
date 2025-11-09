@@ -2,8 +2,9 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { it } from "date-fns/locale";
+import { it, enUS, ro } from "date-fns/locale";
 import { CalendarIcon, Bell, BellRing, Check, X, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Toaster } from "@/components/ui/toaster";
@@ -26,10 +27,19 @@ interface StatoMedicinale {
 }
 
 const GestioneQuotidianaMedicinali = () => {
+  const { t, i18n } = useTranslation();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [inserimenti, setInserimenti] = useState<InserimentoMedicinale[]>([]);
   const [statiMedicinali, setStatiMedicinali] = useState<Record<number, StatoMedicinale>>({});
   const [notificheAbilitate, setNotificheAbilitate] = useState(true);
+
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'en': return enUS;
+      case 'ro': return ro;
+      default: return it;
+    }
+  };
 
   // Carica inserimenti dal localStorage
   useEffect(() => {
@@ -78,8 +88,8 @@ const GestioneQuotidianaMedicinali = () => {
           playNotificationSound();
           
           toast({
-            title: "Promemoria Medicinale",
-            description: `È ora di prendere: ${inserimento.nomeMedicinale}`,
+            title: t('notifications.timeToTake'),
+            description: `${inserimento.nomeMedicinale}`,
             variant: "default",
           });
 
@@ -136,8 +146,8 @@ const GestioneQuotidianaMedicinali = () => {
     const inserimento = inserimenti.find(i => i.id === id);
     if (inserimento) {
       toast({
-        title: nuovoStato === "preso" ? "Medicinale preso!" : "Medicinale non preso",
-        description: `${inserimento.nomeMedicinale} - ${nuovoStato}`,
+        title: nuovoStato === "preso" ? t('notifications.medicineTaken') : t('notifications.medicineNotTaken'),
+        description: t(nuovoStato === "preso" ? 'notifications.medicineTakenDesc' : 'notifications.medicineNotTakenDesc', { name: inserimento.nomeMedicinale }),
         variant: nuovoStato === "preso" ? "default" : "destructive",
       });
     }
@@ -170,7 +180,7 @@ const GestioneQuotidianaMedicinali = () => {
     <div className="w-full max-w-xl mx-auto bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-5 rounded-xl shadow-lg">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-blue-800">
-          Gestione Quotidiana
+          {t('tabs.daily')}
         </h2>
         <Button
           variant={notificheAbilitate ? "default" : "outline"}
@@ -186,7 +196,7 @@ const GestioneQuotidianaMedicinali = () => {
       {/* Selezione Data */}
       <div className="mb-6">
         <label className="block mb-2 text-sm font-medium text-indigo-800">
-          Seleziona data
+          {t('registry.selectDate')}
         </label>
         <Popover>
           <PopoverTrigger asChild>
@@ -198,7 +208,7 @@ const GestioneQuotidianaMedicinali = () => {
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP", { locale: it }) : <span>Scegli una data</span>}
+              {date ? format(date, "PPP", { locale: getLocale() }) : <span>{t('registry.chooseDate')}</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -207,7 +217,7 @@ const GestioneQuotidianaMedicinali = () => {
               selected={date}
               onSelect={setDate}
               initialFocus
-              locale={it}
+              locale={getLocale()}
             />
           </PopoverContent>
         </Popover>
@@ -218,8 +228,8 @@ const GestioneQuotidianaMedicinali = () => {
         {inserimentiOggi.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
-            <p>Nessun medicinale programmato per oggi</p>
-            <p className="text-sm">Vai alla tab "Registro" per aggiungere medicinali</p>
+            <p>{t('medicine.noScheduled')}</p>
+            <p className="text-sm">{t('tabs.registry')}</p>
           </div>
         ) : (
           inserimentiOggi.map((inserimento) => {
@@ -253,14 +263,14 @@ const GestioneQuotidianaMedicinali = () => {
                     className="bg-green-500 hover:bg-green-600 text-white"
                     onClick={() => cambiaStato(inserimento.id, "preso")}
                   >
-                    Preso
+                    {t('medicine.taken')}
                   </Button>
                   <Button
                     size="sm"
                     variant={stato === "non preso" ? "destructive" : "outline"}
                     onClick={() => cambiaStato(inserimento.id, "non preso")}
                   >
-                    Non preso
+                    {t('medicine.notTaken')}
                   </Button>
                 </div>
               </div>
