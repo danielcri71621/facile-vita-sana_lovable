@@ -160,14 +160,14 @@ const RegistroMedicinaliForm = () => {
   return (
     <div
       className={cn(
-        "w-full max-w-xl mx-auto bg-gradient-to-br from-blue-100 via-teal-100 to-green-100 p-5 rounded-xl shadow-2xl",
-        "sm:p-7",
+        "w-full max-w-xl mx-auto bg-gradient-to-br from-card via-accent/5 to-info/5 p-6 rounded-2xl shadow-2xl border border-border",
+        "sm:p-8",
         "md:max-w-lg",
-        "flex flex-col gap-4",
+        "flex flex-col gap-5",
       )}
       style={{ boxSizing: "border-box" }}
     >
-      <h2 className="text-xl font-bold text-center text-blue-800 mb-4">
+      <h2 className="text-2xl font-bold text-center bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
         {t('registry.title')}
       </h2>
 
@@ -203,9 +203,9 @@ const RegistroMedicinaliForm = () => {
       </div>
 
       {/* Inserimento Medicinale */}
-      <div className="bg-white/50 p-4 rounded-lg">
-        <h3 className="font-semibold text-green-700 mb-3 flex items-center gap-2">
-          <Plus className="h-4 w-4" />
+      <div className="bg-gradient-to-br from-card to-accent/5 p-5 rounded-xl shadow-lg border border-border">
+        <h3 className="font-bold text-accent text-lg mb-4 flex items-center gap-2">
+          <Plus className="h-5 w-5" />
           {t('medicine.addNew')}
         </h3>
         
@@ -241,14 +241,14 @@ const RegistroMedicinaliForm = () => {
           <div className="flex gap-2">
             <Button
               onClick={aggiungiInserimento}
-              className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+              className="flex-1 bg-gradient-to-r from-success to-accent hover:from-success/90 hover:to-accent/90 text-success-foreground shadow-lg font-semibold"
             >
               {t('common.add')}
             </Button>
             <Button
               onClick={pulisciCampi}
               variant="outline"
-              className="bg-white/70"
+              className="bg-card border-2 shadow-md font-semibold"
             >
               {t('common.clear')}
             </Button>
@@ -323,7 +323,7 @@ const RegistroMedicinaliForm = () => {
       </div>
 
       <Button
-        className="w-full text-lg sm:text-base py-3 rounded-xl font-semibold shadow-lg bg-gradient-to-tr from-cyan-400 via-blue-400 to-green-300 text-white hover:from-cyan-500 hover:to-green-400 hover:scale-[1.03] transition-all duration-300"
+        className="w-full text-lg sm:text-base py-4 rounded-xl font-bold shadow-xl bg-gradient-to-r from-primary via-info to-accent text-primary-foreground hover:shadow-2xl hover:scale-[1.02] transition-all duration-300"
         onClick={salvaGiornata}
       >
         {t('registry.saveDay')}

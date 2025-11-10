@@ -177,16 +177,16 @@ const GestioneQuotidianaMedicinali = () => {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-5 rounded-xl shadow-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-blue-800">
+    <div className="w-full max-w-xl mx-auto bg-gradient-to-br from-card via-primary/5 to-secondary/5 p-6 rounded-2xl shadow-2xl border border-border">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           {t('tabs.daily')}
         </h2>
         <Button
           variant={notificheAbilitate ? "default" : "outline"}
           size="sm"
           onClick={() => setNotificheAbilitate(!notificheAbilitate)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 shadow-md"
         >
           {notificheAbilitate ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
           {notificheAbilitate ? "ON" : "OFF"}
@@ -195,7 +195,7 @@ const GestioneQuotidianaMedicinali = () => {
 
       {/* Selezione Data */}
       <div className="mb-6">
-        <label className="block mb-2 text-sm font-medium text-indigo-800">
+        <label className="block mb-2 text-sm font-semibold text-foreground">
           {t('registry.selectDate')}
         </label>
         <Popover>
@@ -203,11 +203,11 @@ const GestioneQuotidianaMedicinali = () => {
             <Button
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-medium bg-white/60 shadow-md hover:bg-indigo-50/60",
+                "w-full justify-start text-left font-medium bg-card shadow-lg hover:shadow-xl border-2 hover:border-primary/50 transition-all",
                 !date && "text-muted-foreground"
               )}
             >
-              <CalendarIcon className="mr-2 h-4 w-4" />
+              <CalendarIcon className="mr-2 h-5 w-5 text-primary" />
               {date ? format(date, "PPP", { locale: getLocale() }) : <span>{t('registry.chooseDate')}</span>}
             </Button>
           </PopoverTrigger>
@@ -226,10 +226,10 @@ const GestioneQuotidianaMedicinali = () => {
       {/* Lista Medicinali */}
       <div className="space-y-3">
         {inserimentiOggi.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
-            <p>{t('medicine.noScheduled')}</p>
-            <p className="text-sm">{t('tabs.registry')}</p>
+          <div className="text-center py-12 bg-card/50 rounded-xl border-2 border-dashed border-border">
+            <Clock className="h-16 w-16 mx-auto mb-3 text-muted-foreground opacity-50" />
+            <p className="text-muted-foreground font-medium">{t('medicine.noScheduled')}</p>
+            <p className="text-sm text-muted-foreground">{t('tabs.registry')}</p>
           </div>
         ) : (
           inserimentiOggi.map((inserimento) => {
@@ -238,19 +238,28 @@ const GestioneQuotidianaMedicinali = () => {
               <div
                 key={inserimento.id}
                 className={cn(
-                  "flex items-center justify-between p-4 rounded-lg border-2 transition-all",
-                  getStatoColore(stato)
+                  "flex items-center justify-between p-4 rounded-xl border-2 transition-all shadow-md hover:shadow-lg",
+                  stato === "preso" && "bg-success/10 border-success/30",
+                  stato === "non preso" && "bg-destructive/10 border-destructive/30",
+                  stato === "in attesa" && "bg-warning/10 border-warning/30",
+                  !stato && "bg-card border-border"
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow">
+                  <div className={cn(
+                    "flex items-center justify-center w-12 h-12 rounded-full shadow-md",
+                    stato === "preso" && "bg-success/20",
+                    stato === "non preso" && "bg-destructive/20",
+                    stato === "in attesa" && "bg-warning/20",
+                    !stato && "bg-muted"
+                  )}>
                     {getIconaStato(stato)}
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-800">
+                    <div className="font-bold text-foreground text-lg">
                       {inserimento.nomeMedicinale}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground font-medium">
                       ore {inserimento.orario}
                     </div>
                   </div>
@@ -260,7 +269,10 @@ const GestioneQuotidianaMedicinali = () => {
                   <Button
                     size="sm"
                     variant={stato === "preso" ? "default" : "outline"}
-                    className="bg-green-500 hover:bg-green-600 text-white"
+                    className={cn(
+                      "font-semibold shadow-md",
+                      stato !== "preso" && "bg-success hover:bg-success/90 text-success-foreground border-success"
+                    )}
                     onClick={() => cambiaStato(inserimento.id, "preso")}
                   >
                     {t('medicine.taken')}
@@ -268,6 +280,7 @@ const GestioneQuotidianaMedicinali = () => {
                   <Button
                     size="sm"
                     variant={stato === "non preso" ? "destructive" : "outline"}
+                    className="font-semibold shadow-md"
                     onClick={() => cambiaStato(inserimento.id, "non preso")}
                   >
                     {t('medicine.notTaken')}
