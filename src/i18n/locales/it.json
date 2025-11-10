@@ -1,4 +1,18 @@
 {
+  "chat": {
+    "title": "Assistente Virtuale",
+    "online": "Online - AI Intelligente",
+    "offline": "Offline - Risposte Base",
+    "welcome": "Ciao! Come posso aiutarti?",
+    "welcomeDesc": "Chiedimi qualsiasi cosa sull'app",
+    "placeholder": "Scrivi un messaggio...",
+    "errorTitle": "Errore",
+    "errorDesc": "Si è verificato un errore. Riprovo con risposte offline.",
+    "rateLimitTitle": "Troppi messaggi",
+    "rateLimitDesc": "Per favore attendi un momento prima di inviare altri messaggi.",
+    "creditsTitle": "Crediti esauriti",
+    "creditsDesc": "I crediti AI sono terminati. Contatta il supporto."
+  },
   "common": {
     "back": "Torna alla Home",
     "save": "Salva",

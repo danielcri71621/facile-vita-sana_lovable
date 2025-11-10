@@ -1,4 +1,18 @@
 {
+  "chat": {
+    "title": "Virtual Assistant",
+    "online": "Online - Smart AI",
+    "offline": "Offline - Basic Answers",
+    "welcome": "Hi! How can I help you?",
+    "welcomeDesc": "Ask me anything about the app",
+    "placeholder": "Type a message...",
+    "errorTitle": "Error",
+    "errorDesc": "An error occurred. Switching to offline responses.",
+    "rateLimitTitle": "Too many messages",
+    "rateLimitDesc": "Please wait a moment before sending more messages.",
+    "creditsTitle": "Credits depleted",
+    "creditsDesc": "AI credits have run out. Contact support."
+  },
   "common": {
     "back": "Back to Home",
     "save": "Save",

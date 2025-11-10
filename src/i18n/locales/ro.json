@@ -1,4 +1,18 @@
 {
+  "chat": {
+    "title": "Asistent Virtual",
+    "online": "Online - AI Inteligent",
+    "offline": "Offline - Răspunsuri de Bază",
+    "welcome": "Bună! Cum te pot ajuta?",
+    "welcomeDesc": "Întreabă-mă orice despre aplicație",
+    "placeholder": "Scrie un mesaj...",
+    "errorTitle": "Eroare",
+    "errorDesc": "A apărut o eroare. Trec la răspunsuri offline.",
+    "rateLimitTitle": "Prea multe mesaje",
+    "rateLimitDesc": "Te rog așteaptă un moment înainte de a trimite alte mesaje.",
+    "creditsTitle": "Credite epuizate",
+    "creditsDesc": "Creditele AI s-au terminat. Contactează suportul."
+  },
   "common": {
     "back": "Înapoi la Acasă",
     "save": "Salvează",
