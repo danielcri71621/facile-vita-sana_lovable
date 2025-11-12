@@ -144,7 +144,7 @@ const ChatAssistant = () => {
       <Button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-2xl z-50",
+          "fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-2xl z-[9999]",
           "bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90",
           "transition-all duration-300 hover:scale-110"
         )}
@@ -154,7 +154,7 @@ const ChatAssistant = () => {
 
       {/* Chat window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-card border-2 border-border rounded-2xl shadow-2xl z-40 flex flex-col">
+        <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-card border-2 border-border rounded-2xl shadow-2xl z-[9998] flex flex-col">
           {/* Header */}
           <div className="bg-gradient-to-r from-primary to-secondary p-4 rounded-t-2xl text-primary-foreground">
             <div className="flex justify-between items-center">
