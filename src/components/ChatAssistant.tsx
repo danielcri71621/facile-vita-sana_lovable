@@ -201,10 +201,15 @@ const ChatAssistant = () => {
           }}
           className="fixed inset-x-4 bottom-20 top-4 md:bottom-24 md:right-6 md:left-auto md:top-auto md:w-96 md:h-[500px] bg-card border-2 border-border rounded-2xl shadow-2xl z-[9998] flex flex-col"
         >
+          {/* Swipe indicator - visible on mobile */}
+          <div className="md:hidden flex justify-center pt-2 pb-1 bg-gradient-to-r from-primary to-secondary rounded-t-2xl">
+            <div className="w-12 h-1 bg-primary-foreground/40 rounded-full" />
+          </div>
+
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary to-secondary p-4 rounded-t-2xl text-primary-foreground">
+          <div className="bg-gradient-to-r from-primary to-secondary px-4 pb-4 pt-2 md:pt-4 md:rounded-t-2xl text-primary-foreground">
             <div className="flex justify-between items-center">
-              <div>
+              <div className="flex-1">
                 <h3 className="font-bold text-lg">{t('chat.title')}</h3>
                 <div className="flex items-center gap-2 text-sm opacity-90">
                   {isOnline ? (
@@ -220,6 +225,14 @@ const ChatAssistant = () => {
                   )}
                 </div>
               </div>
+              <Button
+                onClick={() => setIsOpen(false)}
+                variant="ghost"
+                size="icon"
+                className="md:hidden h-10 w-10 hover:bg-primary-foreground/20"
+              >
+                <X className="h-6 w-6" />
+              </Button>
             </div>
           </div>
 
