@@ -21,14 +21,20 @@ const Index = () => {
         </div>
         <div className="space-y-3 sm:space-y-4">
           <Link
-            to="/medicinali"
+            to="/analisi-sangue"
             className="block bg-gradient-to-r from-primary to-info text-primary-foreground px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold text-sm sm:text-base"
+          >
+            Analisi del Sangue
+          </Link>
+          <Link
+            to="/medicinali"
+            className="block bg-gradient-to-r from-secondary to-accent text-secondary-foreground px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold text-sm sm:text-base"
           >
             {t('home.dailyEntry')}
           </Link>
           <Link
             to="/andamento"
-            className="block bg-gradient-to-r from-secondary to-accent text-secondary-foreground px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold text-sm sm:text-base"
+            className="block bg-gradient-to-r from-accent to-secondary text-secondary-foreground px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold text-sm sm:text-base"
           >
             {t('home.viewProgress')}
           </Link>
