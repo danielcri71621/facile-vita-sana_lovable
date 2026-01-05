@@ -1,9 +1,9 @@
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { it, enUS, ro } from "date-fns/locale";
-import { CalendarIcon, Bell, BellRing, Check, X, Clock } from "lucide-react";
+import { CalendarIcon, Bell, BellRing, Check, X, Clock, Volume2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -11,6 +11,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { Capacitor } from '@capacitor/core';
 
 interface InserimentoMedicinale {
   id: number;
@@ -32,6 +34,9 @@ const GestioneQuotidianaMedicinali = () => {
   const [inserimenti, setInserimenti] = useState<InserimentoMedicinale[]>([]);
   const [statiMedicinali, setStatiMedicinali] = useState<Record<number, StatoMedicinale>>({});
   const [notificheAbilitate, setNotificheAbilitate] = useState(true);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const notifiedMedicinesRef = useRef<Set<number>>(new Set());
 
   const getLocale = () => {
     switch (i18n.language) {
@@ -40,6 +45,48 @@ const GestioneQuotidianaMedicinali = () => {
       default: return it;
     }
   };
+
+  // Inizializza AudioContext e richiedi permessi notifiche
+  useEffect(() => {
+    const initAudio = () => {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      if (audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume();
+      }
+      setAudioUnlocked(true);
+    };
+
+    // Sblocca audio al primo click/touch
+    const unlockAudio = () => {
+      initAudio();
+      document.removeEventListener('click', unlockAudio);
+      document.removeEventListener('touchstart', unlockAudio);
+    };
+
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
+
+    // Richiedi permessi notifiche native
+    const requestNotificationPermissions = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const result = await LocalNotifications.requestPermissions();
+          console.log('Permessi notifiche:', result);
+        } catch (error) {
+          console.error('Errore richiesta permessi:', error);
+        }
+      }
+    };
+
+    requestNotificationPermissions();
+
+    return () => {
+      document.removeEventListener('click', unlockAudio);
+      document.removeEventListener('touchstart', unlockAudio);
+    };
+  }, []);
 
   // Carica inserimenti dal localStorage
   useEffect(() => {
@@ -70,20 +117,71 @@ const GestioneQuotidianaMedicinali = () => {
     localStorage.setItem("statiMedicinali", JSON.stringify(statiMedicinali));
   }, [statiMedicinali]);
 
-  // Controllo orari e notifiche
+  // Schedula notifiche native per i medicinali
+  useEffect(() => {
+    const scheduleNativeNotifications = async () => {
+      if (!Capacitor.isNativePlatform() || !notificheAbilitate) return;
+
+      try {
+        // Cancella notifiche esistenti
+        await LocalNotifications.cancel({ notifications: inserimentiOggi.map(i => ({ id: i.id })) });
+
+        const now = new Date();
+        const notifications = inserimentiOggi
+          .filter(inserimento => {
+            const stato = statiMedicinali[inserimento.id];
+            if (stato && stato.stato !== "in attesa") return false;
+            
+            const [hours, minutes] = inserimento.orario.split(':').map(Number);
+            const scheduleDate = new Date(now);
+            scheduleDate.setHours(hours, minutes, 0, 0);
+            return scheduleDate > now;
+          })
+          .map(inserimento => {
+            const [hours, minutes] = inserimento.orario.split(':').map(Number);
+            const scheduleDate = new Date();
+            scheduleDate.setHours(hours, minutes, 0, 0);
+            
+            return {
+              id: inserimento.id,
+              title: t('notifications.timeToTake'),
+              body: inserimento.nomeMedicinale,
+              schedule: { at: scheduleDate },
+              sound: 'default',
+              smallIcon: 'ic_launcher',
+              largeIcon: 'ic_launcher',
+            };
+          });
+
+        if (notifications.length > 0) {
+          await LocalNotifications.schedule({ notifications });
+          console.log('Notifiche schedulate:', notifications.length);
+        }
+      } catch (error) {
+        console.error('Errore scheduling notifiche:', error);
+      }
+    };
+
+    scheduleNativeNotifications();
+  }, [inserimenti, statiMedicinali, notificheAbilitate, date, t]);
+
+  // Controllo orari e notifiche in-app
   useEffect(() => {
     if (!notificheAbilitate) return;
 
     const checkOrari = () => {
       const now = new Date();
       const currentTime = format(now, "HH:mm");
-      const currentDate = format(now, "yyyy-MM-dd");
 
       inserimentiOggi.forEach((inserimento) => {
         const stato = statiMedicinali[inserimento.id];
         
         // Se non è ancora stato preso e l'orario è passato
         if ((!stato || stato.stato === "in attesa") && inserimento.orario <= currentTime) {
+          // Evita notifiche duplicate
+          if (notifiedMedicinesRef.current.has(inserimento.id)) return;
+          notifiedMedicinesRef.current.add(inserimento.id);
+
           // Suona notifica
           playNotificationSound();
           
@@ -108,29 +206,55 @@ const GestioneQuotidianaMedicinali = () => {
       });
     };
 
-    const interval = setInterval(checkOrari, 60000); // Controlla ogni minuto
-    checkOrari(); // Controlla subito
+    const interval = setInterval(checkOrari, 60000);
+    checkOrari();
 
     return () => clearInterval(interval);
-  }, [inserimenti, statiMedicinali, notificheAbilitate, date]);
+  }, [inserimenti, statiMedicinali, notificheAbilitate, date, t]);
+
+  // Reset notifiche giornaliere
+  useEffect(() => {
+    notifiedMedicinesRef.current.clear();
+  }, [date]);
 
   const playNotificationSound = () => {
-    // Crea un suono di notifica semplice
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.5);
+    try {
+      // Usa AudioContext se sbloccato
+      if (audioContextRef.current && audioContextRef.current.state === 'running') {
+        const oscillator = audioContextRef.current.createOscillator();
+        const gainNode = audioContextRef.current.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContextRef.current.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.5, audioContextRef.current.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.5);
+        
+        oscillator.start(audioContextRef.current.currentTime);
+        oscillator.stop(audioContextRef.current.currentTime + 0.5);
+      }
+    } catch (error) {
+      console.error('Errore riproduzione suono:', error);
+    }
+  };
+
+  // Testa il suono manualmente
+  const testSound = () => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (audioContextRef.current.state === 'suspended') {
+      audioContextRef.current.resume().then(() => {
+        setAudioUnlocked(true);
+        playNotificationSound();
+      });
+    } else {
+      setAudioUnlocked(true);
+      playNotificationSound();
+    }
   };
 
   const cambiaStato = (id: number, nuovoStato: "preso" | "non preso") => {
@@ -182,15 +306,26 @@ const GestioneQuotidianaMedicinali = () => {
         <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           {t('tabs.daily')}
         </h2>
-        <Button
-          variant={notificheAbilitate ? "default" : "outline"}
-          size="sm"
-          onClick={() => setNotificheAbilitate(!notificheAbilitate)}
-          className="flex items-center gap-2 shadow-md"
-        >
-          {notificheAbilitate ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
-          {notificheAbilitate ? "ON" : "OFF"}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={testSound}
+            className="flex items-center gap-2 shadow-md"
+            title="Test suono"
+          >
+            <Volume2 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={notificheAbilitate ? "default" : "outline"}
+            size="sm"
+            onClick={() => setNotificheAbilitate(!notificheAbilitate)}
+            className="flex items-center gap-2 shadow-md"
+          >
+            {notificheAbilitate ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+            {notificheAbilitate ? "ON" : "OFF"}
+          </Button>
+        </div>
       </div>
 
       {/* Selezione Data */}
