@@ -1,4 +1,5 @@
 
+
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
@@ -13,6 +14,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 interface InserimentoMedicinale {
   id: number;
@@ -217,7 +219,31 @@ const GestioneQuotidianaMedicinali = () => {
     notifiedMedicinesRef.current.clear();
   }, [date]);
 
-  const playNotificationSound = () => {
+  const triggerVibration = async () => {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        // Vibrazione nativa con Haptics
+        await Haptics.impact({ style: ImpactStyle.Heavy });
+        // Vibrazione multipla per maggiore notorietà
+        setTimeout(async () => {
+          await Haptics.impact({ style: ImpactStyle.Heavy });
+        }, 200);
+        setTimeout(async () => {
+          await Haptics.impact({ style: ImpactStyle.Heavy });
+        }, 400);
+      } else if ('vibrate' in navigator) {
+        // Fallback Web Vibration API
+        navigator.vibrate([200, 100, 200, 100, 200]);
+      }
+    } catch (error) {
+      console.error('Errore vibrazione:', error);
+    }
+  };
+
+  const playNotificationSound = async () => {
+    // Attiva vibrazione
+    await triggerVibration();
+    
     try {
       // Usa AudioContext se sbloccato
       if (audioContextRef.current && audioContextRef.current.state === 'running') {
