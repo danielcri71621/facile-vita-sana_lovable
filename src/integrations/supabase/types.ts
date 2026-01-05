@@ -14,7 +14,129 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      blood_tests: {
+        Row: {
+          azotemia: number | null
+          colesterolo_hdl: number | null
+          colesterolo_ldl: number | null
+          colesterolo_totale: number | null
+          created_at: string
+          creatinina: number | null
+          ematocrito: number | null
+          emoglobina: number | null
+          emoglobina_glicata: number | null
+          ferritina: number | null
+          ft3: number | null
+          ft4: number | null
+          gamma_gt: number | null
+          glicemia: number | null
+          globuli_bianchi: number | null
+          globuli_rossi: number | null
+          got_ast: number | null
+          gpt_alt: number | null
+          id: string
+          notes: string | null
+          pcr: number | null
+          piastrine: number | null
+          potassio: number | null
+          sodio: number | null
+          test_date: string
+          trigliceridi: number | null
+          tsh: number | null
+          updated_at: string
+          user_id: string
+          vitamina_b12: number | null
+          vitamina_d: number | null
+        }
+        Insert: {
+          azotemia?: number | null
+          colesterolo_hdl?: number | null
+          colesterolo_ldl?: number | null
+          colesterolo_totale?: number | null
+          created_at?: string
+          creatinina?: number | null
+          ematocrito?: number | null
+          emoglobina?: number | null
+          emoglobina_glicata?: number | null
+          ferritina?: number | null
+          ft3?: number | null
+          ft4?: number | null
+          gamma_gt?: number | null
+          glicemia?: number | null
+          globuli_bianchi?: number | null
+          globuli_rossi?: number | null
+          got_ast?: number | null
+          gpt_alt?: number | null
+          id?: string
+          notes?: string | null
+          pcr?: number | null
+          piastrine?: number | null
+          potassio?: number | null
+          sodio?: number | null
+          test_date: string
+          trigliceridi?: number | null
+          tsh?: number | null
+          updated_at?: string
+          user_id: string
+          vitamina_b12?: number | null
+          vitamina_d?: number | null
+        }
+        Update: {
+          azotemia?: number | null
+          colesterolo_hdl?: number | null
+          colesterolo_ldl?: number | null
+          colesterolo_totale?: number | null
+          created_at?: string
+          creatinina?: number | null
+          ematocrito?: number | null
+          emoglobina?: number | null
+          emoglobina_glicata?: number | null
+          ferritina?: number | null
+          ft3?: number | null
+          ft4?: number | null
+          gamma_gt?: number | null
+          glicemia?: number | null
+          globuli_bianchi?: number | null
+          globuli_rossi?: number | null
+          got_ast?: number | null
+          gpt_alt?: number | null
+          id?: string
+          notes?: string | null
+          pcr?: number | null
+          piastrine?: number | null
+          potassio?: number | null
+          sodio?: number | null
+          test_date?: string
+          trigliceridi?: number | null
+          tsh?: number | null
+          updated_at?: string
+          user_id?: string
+          vitamina_b12?: number | null
+          vitamina_d?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
