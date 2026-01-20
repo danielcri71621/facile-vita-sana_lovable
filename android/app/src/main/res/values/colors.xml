@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary color derived from the app's theme -->
+    <color name="colorPrimary">#4FB3BF</color>
+    <color name="colorPrimaryDark">#3A9AA6</color>
+    <color name="colorAccent">#4FB3BF</color>
+    
+    <!-- Adaptive icon background color -->
+    <color name="ic_launcher_background">#4FB3BF</color>
+</resources>
