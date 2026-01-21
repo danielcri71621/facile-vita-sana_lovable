@@ -26,7 +26,8 @@
     "date": "Date",
     "time": "Time",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "settings": "Settings"
   },
   "home": {
     "title": "Daily Health Diary",
@@ -142,5 +143,11 @@
     "italian": "Italiano",
     "english": "English",
     "romanian": "Română"
+  },
+  "settings": {
+    "notificationSettings": "Notification Settings",
+    "vibrationIntensity": "Vibration Intensity",
+    "soundVolume": "Sound Volume",
+    "testNotification": "Test Notification"
   }
 }
