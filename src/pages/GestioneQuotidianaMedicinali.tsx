@@ -4,7 +4,7 @@ import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { it, enUS, ro } from "date-fns/locale";
-import { CalendarIcon, Bell, BellRing, Check, X, Clock, Volume2 } from "lucide-react";
+import { CalendarIcon, Bell, BellRing, Check, X, Clock, Volume2, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -15,6 +15,9 @@ import { cn } from "@/lib/utils";
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 
 interface InserimentoMedicinale {
   id: number;
@@ -30,6 +33,11 @@ interface StatoMedicinale {
   timestampStato: number;
 }
 
+interface NotificationSettings {
+  vibrationIntensity: number; // 0-100
+  soundVolume: number; // 0-100
+}
+
 const GestioneQuotidianaMedicinali = () => {
   const { t, i18n } = useTranslation();
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -37,6 +45,11 @@ const GestioneQuotidianaMedicinali = () => {
   const [statiMedicinali, setStatiMedicinali] = useState<Record<number, StatoMedicinale>>({});
   const [notificheAbilitate, setNotificheAbilitate] = useState(true);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [settings, setSettings] = useState<NotificationSettings>({
+    vibrationIntensity: 70,
+    soundVolume: 50
+  });
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
   const notifiedMedicinesRef = useRef<Set<number>>(new Set());
 
@@ -101,6 +114,23 @@ const GestioneQuotidianaMedicinali = () => {
       }
     }
   }, []);
+
+  // Carica impostazioni notifiche dal localStorage
+  useEffect(() => {
+    const savedSettings = localStorage.getItem("notificationSettings");
+    if (savedSettings) {
+      try {
+        setSettings(JSON.parse(savedSettings));
+      } catch (error) {
+        console.error("Errore nel caricamento impostazioni:", error);
+      }
+    }
+  }, []);
+
+  // Salva impostazioni notifiche nel localStorage
+  useEffect(() => {
+    localStorage.setItem("notificationSettings", JSON.stringify(settings));
+  }, [settings]);
 
   // Carica stati medicinali dal localStorage
   useEffect(() => {
@@ -219,21 +249,37 @@ const GestioneQuotidianaMedicinali = () => {
     notifiedMedicinesRef.current.clear();
   }, [date]);
 
+  const getVibrationStyle = () => {
+    if (settings.vibrationIntensity <= 33) return ImpactStyle.Light;
+    if (settings.vibrationIntensity <= 66) return ImpactStyle.Medium;
+    return ImpactStyle.Heavy;
+  };
+
+  const getVibrationCount = () => {
+    if (settings.vibrationIntensity <= 25) return 1;
+    if (settings.vibrationIntensity <= 50) return 2;
+    if (settings.vibrationIntensity <= 75) return 3;
+    return 4;
+  };
+
   const triggerVibration = async () => {
+    if (settings.vibrationIntensity === 0) return; // Vibrazione disabilitata
+    
     try {
       if (Capacitor.isNativePlatform()) {
-        // Vibrazione nativa con Haptics
-        await Haptics.impact({ style: ImpactStyle.Heavy });
-        // Vibrazione multipla per maggiore notorietà
-        setTimeout(async () => {
-          await Haptics.impact({ style: ImpactStyle.Heavy });
-        }, 200);
-        setTimeout(async () => {
-          await Haptics.impact({ style: ImpactStyle.Heavy });
-        }, 400);
+        const style = getVibrationStyle();
+        const count = getVibrationCount();
+        
+        for (let i = 0; i < count; i++) {
+          setTimeout(async () => {
+            await Haptics.impact({ style });
+          }, i * 200);
+        }
       } else if ('vibrate' in navigator) {
-        // Fallback Web Vibration API
-        navigator.vibrate([200, 100, 200, 100, 200]);
+        // Fallback Web Vibration API - durata basata su intensità
+        const duration = Math.floor(100 + (settings.vibrationIntensity * 2));
+        const pattern = Array(getVibrationCount()).fill([duration, 100]).flat();
+        navigator.vibrate(pattern);
       }
     } catch (error) {
       console.error('Errore vibrazione:', error);
@@ -243,6 +289,8 @@ const GestioneQuotidianaMedicinali = () => {
   const playNotificationSound = async () => {
     // Attiva vibrazione
     await triggerVibration();
+    
+    if (settings.soundVolume === 0) return; // Suono disabilitato
     
     try {
       // Usa AudioContext se sbloccato
@@ -256,7 +304,9 @@ const GestioneQuotidianaMedicinali = () => {
         oscillator.frequency.value = 800;
         oscillator.type = 'sine';
         
-        gainNode.gain.setValueAtTime(0.5, audioContextRef.current.currentTime);
+        // Volume basato su impostazione (0-1)
+        const volume = settings.soundVolume / 100;
+        gainNode.gain.setValueAtTime(volume, audioContextRef.current.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.5);
         
         oscillator.start(audioContextRef.current.currentTime);
@@ -333,15 +383,73 @@ const GestioneQuotidianaMedicinali = () => {
           {t('tabs.daily')}
         </h2>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={testSound}
-            className="flex items-center gap-2 shadow-md"
-            title="Test suono"
-          >
-            <Volume2 className="h-4 w-4" />
-          </Button>
+          <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 shadow-md"
+                title={t('common.settings') || "Impostazioni"}
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>{t('settings.notificationSettings') || "Impostazioni Notifiche"}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-6 py-4">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="vibration" className="text-sm font-medium">
+                      {t('settings.vibrationIntensity') || "Intensità Vibrazione"}
+                    </Label>
+                    <span className="text-sm text-muted-foreground">
+                      {settings.vibrationIntensity === 0 ? "OFF" : `${settings.vibrationIntensity}%`}
+                    </span>
+                  </div>
+                  <Slider
+                    id="vibration"
+                    min={0}
+                    max={100}
+                    step={10}
+                    value={[settings.vibrationIntensity]}
+                    onValueChange={(value) => setSettings(prev => ({ ...prev, vibrationIntensity: value[0] }))}
+                    className="w-full"
+                  />
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="volume" className="text-sm font-medium">
+                      {t('settings.soundVolume') || "Volume Suono"}
+                    </Label>
+                    <span className="text-sm text-muted-foreground">
+                      {settings.soundVolume === 0 ? "OFF" : `${settings.soundVolume}%`}
+                    </span>
+                  </div>
+                  <Slider
+                    id="volume"
+                    min={0}
+                    max={100}
+                    step={10}
+                    value={[settings.soundVolume]}
+                    onValueChange={(value) => setSettings(prev => ({ ...prev, soundVolume: value[0] }))}
+                    className="w-full"
+                  />
+                </div>
+                
+                <Button
+                  variant="outline"
+                  onClick={testSound}
+                  className="w-full flex items-center justify-center gap-2"
+                >
+                  <Volume2 className="h-4 w-4" />
+                  {t('settings.testNotification') || "Testa Notifica"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
           <Button
             variant={notificheAbilitate ? "default" : "outline"}
             size="sm"
