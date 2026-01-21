@@ -26,7 +26,8 @@
     "date": "Data",
     "time": "Ora",
     "yes": "Da",
-    "no": "Nu"
+    "no": "Nu",
+    "settings": "Setări"
   },
   "home": {
     "title": "Jurnal Zilnic de Sănătate",
@@ -142,5 +143,11 @@
     "italian": "Italiano",
     "english": "English",
     "romanian": "Română"
+  },
+  "settings": {
+    "notificationSettings": "Setări Notificări",
+    "vibrationIntensity": "Intensitate Vibrație",
+    "soundVolume": "Volum Sunet",
+    "testNotification": "Testează Notificarea"
   }
 }

@@ -26,7 +26,8 @@
     "date": "Data",
     "time": "Orario",
     "yes": "Sì",
-    "no": "No"
+    "no": "No",
+    "settings": "Impostazioni"
   },
   "home": {
     "title": "Diario Salute Giornaliero",
@@ -142,5 +143,11 @@
     "italian": "Italiano",
     "english": "English",
     "romanian": "Română"
+  },
+  "settings": {
+    "notificationSettings": "Impostazioni Notifiche",
+    "vibrationIntensity": "Intensità Vibrazione",
+    "soundVolume": "Volume Suono",
+    "testNotification": "Testa Notifica"
   }
 }
