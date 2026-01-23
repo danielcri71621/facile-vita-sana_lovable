@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { format, subDays, parseISO } from "date-fns";
@@ -117,15 +116,15 @@ const GraficoMedicinali = () => {
 
   if (!hasData) {
     return (
-      <div className="h-[340px] w-full">
+      <div className="h-[250px] w-full">
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <ChartBar className="h-5 w-5" /> {t('chart.weeklyProgress')}
         </h2>
-        <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-center h-48 bg-gray-50 rounded-lg">
           <div className="text-center text-gray-500">
-            <ChartBar className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p className="text-lg font-medium">{t('chart.noData')}</p>
-            <p className="text-sm">{t('chart.noDataDesc')}</p>
+            <ChartBar className="h-10 w-10 mx-auto mb-2 opacity-50" />
+            <p className="text-base font-medium">{t('chart.noData')}</p>
+            <p className="text-xs">{t('chart.noDataDesc')}</p>
           </div>
         </div>
       </div>
@@ -133,35 +132,41 @@ const GraficoMedicinali = () => {
   }
 
   return (
-    <div className="h-[340px] w-full">
+    <div className="h-[250px] w-full">
       <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
         <ChartBar className="h-5 w-5" /> {t('chart.weeklyProgress')}
       </h2>
-      <ChartContainer config={chartConfig} className="h-[85%]">
-        <LineChart data={datiGrafico}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="giorno" />
-          <YAxis />
-          <ChartTooltip content={<ChartTooltipContent />} />
-          <Line 
-            type="monotone" 
-            dataKey="pressione" 
-            stroke="#2563eb" 
-            name={t('chart.pressure')}
-            connectNulls={false}
-            dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
-          />
-          <Line 
-            type="monotone" 
-            dataKey="glicemia" 
-            stroke="#16a34a" 
-            name={t('chart.glucose')}
-            connectNulls={false}
-            dot={{ fill: "#16a34a", strokeWidth: 2, r: 4 }}
-          />
-        </LineChart>
+      <ChartContainer config={chartConfig} className="h-[80%]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={datiGrafico} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="giorno" tickLine={false} axisLine={false} style={{ fontSize: '10px' }} />
+            <YAxis style={{ fontSize: '10px' }} />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Line 
+              type="monotone" 
+              dataKey="pressione" 
+              stroke="#2563eb" 
+              name={t('chart.pressure')}
+              connectNulls={false}
+              dot={{ fill: "#2563eb", strokeWidth: 2, r: 3 }}
+              activeDot={{ r: 6 }}
+              strokeWidth={2}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="glicemia" 
+              stroke="#16a34a" 
+              name={t('chart.glucose')}
+              connectNulls={false}
+              dot={{ fill: "#16a34a", strokeWidth: 2, r: 3 }}
+              activeDot={{ r: 6 }}
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </ChartContainer>
-      <div className="text-xs text-muted-foreground mt-3">
+      <div className="text-xs text-muted-foreground mt-3 text-center">
         {t('chart.description')}
       </div>
     </div>
