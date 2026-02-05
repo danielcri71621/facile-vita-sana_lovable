@@ -107,7 +107,19 @@
     "entrySaved": "Inserimento salvato!",
     "entrySavedDesc": "{{name}} registrato per il {{date}} alle {{time}}",
     "entryRemoved": "Inserimento rimosso",
-    "entryRemovedDesc": "L'inserimento è stato eliminato"
+    "entryRemovedDesc": "L'inserimento è stato eliminato",
+    "permissionStatus": "Stato Permessi",
+    "statusGranted": "Concessi ✓",
+    "statusDenied": "Negati ✗",
+    "statusPrompt": "Da richiedere",
+    "statusUnknown": "Sconosciuto",
+    "requestPermission": "Richiedi Permessi Notifiche",
+    "permissionGranted": "Permessi concessi!",
+    "permissionGrantedDesc": "Le notifiche sono ora attive",
+    "permissionDenied": "Permessi negati",
+    "permissionDeniedDesc": "Abilita le notifiche nelle impostazioni del telefono",
+    "permissionError": "Errore",
+    "deniedHelp": "I permessi sono stati negati. Vai in Impostazioni > App > facile vita sana > Notifiche per abilitarle manualmente."
   },
   "errors": {
     "missingFields": "Campi mancanti",

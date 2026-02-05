@@ -105,9 +105,21 @@
     "medicineNotTaken": "✗ Not taken",
     "medicineNotTakenDesc": "{{name}} marked as not taken",
     "entrySaved": "Entry saved!",
-    "entrySavedDesc": "{{name}} recorded for {{date}} at {{time}}",
+    "entrySavedDesc": "{{name}} registered for {{date}} at {{time}}",
     "entryRemoved": "Entry removed",
-    "entryRemovedDesc": "The entry has been deleted"
+    "entryRemovedDesc": "The entry has been deleted",
+    "permissionStatus": "Permission Status",
+    "statusGranted": "Granted ✓",
+    "statusDenied": "Denied ✗",
+    "statusPrompt": "Request needed",
+    "statusUnknown": "Unknown",
+    "requestPermission": "Request Notification Permissions",
+    "permissionGranted": "Permissions granted!",
+    "permissionGrantedDesc": "Notifications are now active",
+    "permissionDenied": "Permissions denied",
+    "permissionDeniedDesc": "Enable notifications in phone settings",
+    "permissionError": "Error",
+    "deniedHelp": "Permissions were denied. Go to Settings > Apps > facile vita sana > Notifications to enable them manually."
   },
   "errors": {
     "missingFields": "Missing fields",
