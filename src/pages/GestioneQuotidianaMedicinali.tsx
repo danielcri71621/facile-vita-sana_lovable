@@ -18,6 +18,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface InserimentoMedicinale {
   id: number;
@@ -50,6 +51,7 @@ const GestioneQuotidianaMedicinali = () => {
     soundVolume: 50
   });
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [permissionStatus, setPermissionStatus] = useState<string>("unknown");
   const audioContextRef = useRef<AudioContext | null>(null);
   const notifiedMedicinesRef = useRef<Set<number>>(new Set());
 
@@ -89,8 +91,15 @@ const GestioneQuotidianaMedicinali = () => {
         try {
           const result = await LocalNotifications.requestPermissions();
           console.log('Permessi notifiche:', result);
+          setPermissionStatus(result.display);
         } catch (error) {
           console.error('Errore richiesta permessi:', error);
+          setPermissionStatus("denied");
+        }
+      } else {
+        // Web - check Notification API
+        if ('Notification' in window) {
+          setPermissionStatus(Notification.permission);
         }
       }
     };
@@ -102,6 +111,72 @@ const GestioneQuotidianaMedicinali = () => {
       document.removeEventListener('touchstart', unlockAudio);
     };
   }, []);
+
+  // Funzione per richiedere permessi esplicitamente
+  const requestPermissions = async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const result = await LocalNotifications.requestPermissions();
+        setPermissionStatus(result.display);
+        
+        if (result.display === "granted") {
+          toast({
+            title: t('notifications.permissionGranted') || "Permessi concessi",
+            description: t('notifications.permissionGrantedDesc') || "Le notifiche sono ora attive",
+          });
+        } else {
+          toast({
+            title: t('notifications.permissionDenied') || "Permessi negati",
+            description: t('notifications.permissionDeniedDesc') || "Abilita le notifiche nelle impostazioni del telefono",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Errore richiesta permessi:', error);
+        toast({
+          title: t('notifications.permissionError') || "Errore",
+          description: String(error),
+          variant: "destructive",
+        });
+      }
+    } else {
+      // Web Notification API
+      if ('Notification' in window) {
+        const permission = await Notification.requestPermission();
+        setPermissionStatus(permission);
+        
+        if (permission === "granted") {
+          toast({
+            title: t('notifications.permissionGranted') || "Permessi concessi",
+            description: t('notifications.permissionGrantedDesc') || "Le notifiche sono ora attive",
+          });
+        } else {
+          toast({
+            title: t('notifications.permissionDenied') || "Permessi negati",
+            description: t('notifications.permissionDeniedDesc') || "Abilita le notifiche nelle impostazioni del browser",
+            variant: "destructive",
+          });
+        }
+      }
+    }
+  };
+
+  const getPermissionStatusColor = () => {
+    switch (permissionStatus) {
+      case "granted": return "text-success";
+      case "denied": return "text-destructive";
+      default: return "text-warning";
+    }
+  };
+
+  const getPermissionStatusText = () => {
+    switch (permissionStatus) {
+      case "granted": return t('notifications.statusGranted') || "Concessi";
+      case "denied": return t('notifications.statusDenied') || "Negati";
+      case "prompt": return t('notifications.statusPrompt') || "Da richiedere";
+      default: return t('notifications.statusUnknown') || "Sconosciuto";
+    }
+  };
 
   // Carica inserimenti dal localStorage
   useEffect(() => {
@@ -447,6 +522,36 @@ const GestioneQuotidianaMedicinali = () => {
                   <Volume2 className="h-4 w-4" />
                   {t('settings.testNotification') || "Testa Notifica"}
                 </Button>
+                
+                <div className="border-t pt-4 mt-2">
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-sm font-medium">
+                      {t('notifications.permissionStatus') || "Stato Permessi"}
+                    </Label>
+                    <span className={cn("text-sm font-semibold", getPermissionStatusColor())}>
+                      {getPermissionStatusText()}
+                    </span>
+                  </div>
+                  
+                  {permissionStatus !== "granted" && (
+                    <Button
+                      variant="default"
+                      onClick={requestPermissions}
+                      className="w-full flex items-center justify-center gap-2"
+                    >
+                      <Bell className="h-4 w-4" />
+                      {t('notifications.requestPermission') || "Richiedi Permessi Notifiche"}
+                    </Button>
+                  )}
+                  
+                  {permissionStatus === "denied" && (
+                    <Alert className="mt-3" variant="destructive">
+                      <AlertDescription className="text-xs">
+                        {t('notifications.deniedHelp') || "I permessi sono stati negati. Vai nelle Impostazioni del telefono > App > facile vita sana > Notifiche per abilitarle."}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
               </div>
             </DialogContent>
           </Dialog>
