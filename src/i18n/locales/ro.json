@@ -160,6 +160,10 @@
     "notificationSettings": "Setări Notificări",
     "vibrationIntensity": "Intensitate Vibrație",
     "soundVolume": "Volum Sunet",
-    "testNotification": "Testează Notificarea"
+    "testNotification": "Testează Notificarea",
+    "soundType": "Tip Sunet",
+    "soundBeep": "Beep",
+    "soundBell": "Clopoțel",
+    "soundMelody": "Melodie"
   }
 }
