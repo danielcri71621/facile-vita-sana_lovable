@@ -160,6 +160,10 @@
     "notificationSettings": "Impostazioni Notifiche",
     "vibrationIntensity": "Intensità Vibrazione",
     "soundVolume": "Volume Suono",
-    "testNotification": "Testa Notifica"
+    "testNotification": "Testa Notifica",
+    "soundType": "Tipo di Suono",
+    "soundBeep": "Beep",
+    "soundBell": "Campanella",
+    "soundMelody": "Melodia"
   }
 }

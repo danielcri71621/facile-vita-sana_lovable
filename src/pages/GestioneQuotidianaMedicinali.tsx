@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface InserimentoMedicinale {
   id: number;
@@ -37,6 +38,7 @@ interface StatoMedicinale {
 interface NotificationSettings {
   vibrationIntensity: number; // 0-100
   soundVolume: number; // 0-100
+  soundType: "beep" | "bell" | "melody";
 }
 
 const GestioneQuotidianaMedicinali = () => {
@@ -48,7 +50,8 @@ const GestioneQuotidianaMedicinali = () => {
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [settings, setSettings] = useState<NotificationSettings>({
     vibrationIntensity: 70,
-    soundVolume: 50
+    soundVolume: 50,
+    soundType: "beep"
   });
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState<string>("unknown");
@@ -361,6 +364,78 @@ const GestioneQuotidianaMedicinali = () => {
     }
   };
 
+  const playBeep = (ctx: AudioContext, volume: number) => {
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.5);
+  };
+
+  const playBell = (ctx: AudioContext, volume: number) => {
+    // Campanella - suono più ricco con armoniche
+    const frequencies = [523.25, 659.25, 783.99]; // Do, Mi, Sol
+    
+    frequencies.forEach((freq, index) => {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      oscillator.frequency.value = freq;
+      oscillator.type = 'sine';
+      
+      const startTime = ctx.currentTime + (index * 0.05);
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(volume * 0.7, startTime + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.8);
+      
+      oscillator.start(startTime);
+      oscillator.stop(startTime + 0.8);
+    });
+  };
+
+  const playMelody = (ctx: AudioContext, volume: number) => {
+    // Melodia - sequenza di note
+    const notes = [
+      { freq: 523.25, duration: 0.15 }, // Do
+      { freq: 587.33, duration: 0.15 }, // Re
+      { freq: 659.25, duration: 0.15 }, // Mi
+      { freq: 783.99, duration: 0.3 },  // Sol
+    ];
+    
+    let time = ctx.currentTime;
+    
+    notes.forEach((note) => {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      oscillator.frequency.value = note.freq;
+      oscillator.type = 'triangle';
+      
+      gainNode.gain.setValueAtTime(volume, time);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, time + note.duration);
+      
+      oscillator.start(time);
+      oscillator.stop(time + note.duration);
+      
+      time += note.duration;
+    });
+  };
+
   const playNotificationSound = async () => {
     // Attiva vibrazione
     await triggerVibration();
@@ -370,22 +445,20 @@ const GestioneQuotidianaMedicinali = () => {
     try {
       // Usa AudioContext se sbloccato
       if (audioContextRef.current && audioContextRef.current.state === 'running') {
-        const oscillator = audioContextRef.current.createOscillator();
-        const gainNode = audioContextRef.current.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContextRef.current.destination);
-        
-        oscillator.frequency.value = 800;
-        oscillator.type = 'sine';
-        
-        // Volume basato su impostazione (0-1)
         const volume = settings.soundVolume / 100;
-        gainNode.gain.setValueAtTime(volume, audioContextRef.current.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.5);
         
-        oscillator.start(audioContextRef.current.currentTime);
-        oscillator.stop(audioContextRef.current.currentTime + 0.5);
+        switch (settings.soundType) {
+          case "bell":
+            playBell(audioContextRef.current, volume);
+            break;
+          case "melody":
+            playMelody(audioContextRef.current, volume);
+            break;
+          case "beep":
+          default:
+            playBeep(audioContextRef.current, volume);
+            break;
+        }
       }
     } catch (error) {
       console.error('Errore riproduzione suono:', error);
@@ -512,6 +585,27 @@ const GestioneQuotidianaMedicinali = () => {
                     onValueChange={(value) => setSettings(prev => ({ ...prev, soundVolume: value[0] }))}
                     className="w-full"
                   />
+                </div>
+                
+                <div className="space-y-3">
+                  <Label htmlFor="soundType" className="text-sm font-medium">
+                    {t('settings.soundType') || "Tipo di Suono"}
+                  </Label>
+                  <Select
+                    value={settings.soundType}
+                    onValueChange={(value: "beep" | "bell" | "melody") => 
+                      setSettings(prev => ({ ...prev, soundType: value }))
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beep">{t('settings.soundBeep') || "Beep"}</SelectItem>
+                      <SelectItem value="bell">{t('settings.soundBell') || "Campanella"}</SelectItem>
+                      <SelectItem value="melody">{t('settings.soundMelody') || "Melodia"}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <Button
