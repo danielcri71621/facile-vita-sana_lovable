@@ -20,7 +20,7 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { scheduleMedicationNotifications } from "@/lib/medicationNotifications";
+import { ensureMedicationNotificationPermissions, scheduleMedicationNotifications } from "@/lib/medicationNotifications";
 
 interface InserimentoMedicinale {
   id: number;
@@ -93,7 +93,7 @@ const GestioneQuotidianaMedicinali = () => {
     const requestNotificationPermissions = async () => {
       if (Capacitor.isNativePlatform()) {
         try {
-          const result = await LocalNotifications.requestPermissions();
+          const result = await ensureMedicationNotificationPermissions();
           console.log('Permessi notifiche:', result);
           setPermissionStatus(result.display);
         } catch (error) {
@@ -120,13 +120,15 @@ const GestioneQuotidianaMedicinali = () => {
   const requestPermissions = async () => {
     if (Capacitor.isNativePlatform()) {
       try {
-        const result = await LocalNotifications.requestPermissions();
+        const result = await ensureMedicationNotificationPermissions(true);
         setPermissionStatus(result.display);
         
         if (result.display === "granted") {
           toast({
             title: t('notifications.permissionGranted') || "Permessi concessi",
-            description: t('notifications.permissionGrantedDesc') || "Le notifiche sono ora attive",
+            description: result.exactAlarm && result.exactAlarm !== "granted"
+              ? "Le notifiche sono attive, ma abilita anche Allarmi e promemoria per riceverle all'ora esatta"
+              : t('notifications.permissionGrantedDesc') || "Le notifiche sono ora attive",
           });
         } else {
           toast({
