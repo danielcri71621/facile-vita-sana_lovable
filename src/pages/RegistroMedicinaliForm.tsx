@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { cancelMedicationNotifications, scheduleMedicationNotifications } from "@/lib/medicationNotifications";
 
 interface InserimentoMedicinale {
   id: number;
@@ -57,9 +58,12 @@ const RegistroMedicinaliForm = () => {
     }
   }, []);
 
-  // Salva inserimenti nel localStorage quando cambiano
+  // Salva inserimenti e aggiorna le notifiche native quando cambiano
   useEffect(() => {
     localStorage.setItem("inserimentiMedicinali", JSON.stringify(inserimenti));
+    scheduleMedicationNotifications(inserimenti, {}, t('notifications.timeToTake')).catch((error) => {
+      console.error("Errore aggiornamento notifiche medicinali:", error);
+    });
   }, [inserimenti]);
 
   // Carica parametri vitali dal localStorage
@@ -113,6 +117,9 @@ const RegistroMedicinaliForm = () => {
 
   const rimuoviInserimento = (id: number) => {
     setInserimenti(prev => prev.filter(item => item.id !== id));
+    cancelMedicationNotifications([id]).catch((error) => {
+      console.error("Errore cancellazione notifica medicinale:", error);
+    });
     toast({
       title: t('notifications.entryRemoved'),
       description: t('notifications.entryRemovedDesc'),
