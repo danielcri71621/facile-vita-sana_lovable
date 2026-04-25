@@ -20,6 +20,7 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { scheduleMedicationNotifications } from "@/lib/medicationNotifications";
 
 interface InserimentoMedicinale {
   id: number;
@@ -227,53 +228,20 @@ const GestioneQuotidianaMedicinali = () => {
     localStorage.setItem("statiMedicinali", JSON.stringify(statiMedicinali));
   }, [statiMedicinali]);
 
-  // Schedula notifiche native per i medicinali
+  // Schedula notifiche native per i medicinali anche quando l'app viene chiusa
   useEffect(() => {
     const scheduleNativeNotifications = async () => {
       if (!Capacitor.isNativePlatform() || !notificheAbilitate) return;
 
       try {
-        // Cancella notifiche esistenti
-        await LocalNotifications.cancel({ notifications: inserimentiOggi.map(i => ({ id: i.id })) });
-
-        const now = new Date();
-        const notifications = inserimentiOggi
-          .filter(inserimento => {
-            const stato = statiMedicinali[inserimento.id];
-            if (stato && stato.stato !== "in attesa") return false;
-            
-            const [hours, minutes] = inserimento.orario.split(':').map(Number);
-            const scheduleDate = new Date(now);
-            scheduleDate.setHours(hours, minutes, 0, 0);
-            return scheduleDate > now;
-          })
-          .map(inserimento => {
-            const [hours, minutes] = inserimento.orario.split(':').map(Number);
-            const scheduleDate = new Date();
-            scheduleDate.setHours(hours, minutes, 0, 0);
-            
-            return {
-              id: inserimento.id,
-              title: t('notifications.timeToTake'),
-              body: inserimento.nomeMedicinale,
-              schedule: { at: scheduleDate },
-              sound: 'default',
-              smallIcon: 'ic_launcher',
-              largeIcon: 'ic_launcher',
-            };
-          });
-
-        if (notifications.length > 0) {
-          await LocalNotifications.schedule({ notifications });
-          console.log('Notifiche schedulate:', notifications.length);
-        }
+        await scheduleMedicationNotifications(inserimenti, statiMedicinali, t('notifications.timeToTake'));
       } catch (error) {
         console.error('Errore scheduling notifiche:', error);
       }
     };
 
     scheduleNativeNotifications();
-  }, [inserimenti, statiMedicinali, notificheAbilitate, date, t]);
+  }, [inserimenti, statiMedicinali, notificheAbilitate, t]);
 
   // Controllo orari e notifiche in-app
   useEffect(() => {
