@@ -12,6 +12,11 @@ interface MedicationStatus {
   stato: "preso" | "non preso" | "in attesa";
 }
 
+interface MedicationNotificationPermissions {
+  display: string;
+  exactAlarm?: string;
+}
+
 const MAX_ANDROID_NOTIFICATION_ID = 2_147_483_647;
 export const MEDICATION_NOTIFICATION_CHANNEL_ID = "medicine_reminders";
 
@@ -41,6 +46,36 @@ export const ensureMedicationNotificationChannel = async () => {
   });
 };
 
+export const ensureMedicationNotificationPermissions = async (
+  openExactAlarmSettings = false,
+): Promise<MedicationNotificationPermissions> => {
+  if (!Capacitor.isNativePlatform()) {
+    return { display: "granted" };
+  }
+
+  let display = (await LocalNotifications.checkPermissions()).display;
+
+  if (display !== "granted") {
+    display = (await LocalNotifications.requestPermissions()).display;
+  }
+
+  let exactAlarm: string | undefined;
+
+  if (Capacitor.getPlatform() === "android") {
+    try {
+      exactAlarm = (await LocalNotifications.checkExactNotificationSetting()).exact_alarm;
+
+      if (exactAlarm !== "granted" && openExactAlarmSettings) {
+        exactAlarm = (await LocalNotifications.changeExactNotificationSetting()).exact_alarm;
+      }
+    } catch (error) {
+      console.warn("Impossibile verificare il permesso allarmi esatti:", error);
+    }
+  }
+
+  return { display, exactAlarm };
+};
+
 export const cancelMedicationNotifications = async (ids: number[]) => {
   if (!Capacitor.isNativePlatform() || ids.length === 0) return;
 
@@ -55,6 +90,16 @@ export const scheduleMedicationNotifications = async (
   title = "È ora di prendere il medicinale",
 ) => {
   if (!Capacitor.isNativePlatform()) return;
+
+  const permissions = await ensureMedicationNotificationPermissions();
+  if (permissions.display !== "granted") {
+    console.warn("Notifiche medicinali non programmate: permesso notifiche non concesso.");
+    return;
+  }
+
+  if (permissions.exactAlarm && permissions.exactAlarm !== "granted") {
+    console.warn("Allarmi esatti non concessi: Android potrebbe ritardare il promemoria medicinale.");
+  }
 
   await ensureMedicationNotificationChannel();
 
@@ -79,8 +124,6 @@ export const scheduleMedicationNotifications = async (
       },
       channelId: MEDICATION_NOTIFICATION_CHANNEL_ID,
       sound: "default",
-      smallIcon: "ic_launcher",
-      largeIcon: "ic_launcher",
       autoCancel: true,
       extra: { medicineId: reminder.id },
     }));
