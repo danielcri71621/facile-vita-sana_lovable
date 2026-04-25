@@ -61,10 +61,13 @@ const RegistroMedicinaliForm = () => {
   // Salva inserimenti e aggiorna le notifiche native quando cambiano
   useEffect(() => {
     localStorage.setItem("inserimentiMedicinali", JSON.stringify(inserimenti));
-    scheduleMedicationNotifications(inserimenti, {}, t('notifications.timeToTake')).catch((error) => {
+    const savedStati = localStorage.getItem("statiMedicinali");
+    const statiMedicinali = savedStati ? JSON.parse(savedStati) : {};
+
+    scheduleMedicationNotifications(inserimenti, statiMedicinali, t('notifications.timeToTake')).catch((error) => {
       console.error("Errore aggiornamento notifiche medicinali:", error);
     });
-  }, [inserimenti]);
+  }, [inserimenti, t]);
 
   // Carica parametri vitali dal localStorage
   useEffect(() => {
