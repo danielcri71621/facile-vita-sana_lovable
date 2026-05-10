@@ -32,6 +32,12 @@ const Index = () => {
           >
             {t('home.viewProgress')}
           </Link>
+          <Link
+            to="/diagnostica-notifiche"
+            className="block bg-card text-card-foreground border border-border px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow hover:shadow-md hover:scale-105 transition-all duration-300 font-semibold text-sm sm:text-base"
+          >
+            {t('diagnostics.title')}
+          </Link>
         </div>
       </div>
     </div>

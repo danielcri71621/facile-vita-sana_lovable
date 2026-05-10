@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Medicinali from "./pages/Medicinali";
 import Andamento from "./pages/Andamento";
+import DiagnosticaNotifiche from "./pages/DiagnosticaNotifiche";
 import ChatAssistant from "./components/ChatAssistant";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/medicinali" element={<Medicinali />} />
           <Route path="/andamento" element={<Andamento />} />
+          <Route path="/diagnostica-notifiche" element={<DiagnosticaNotifiche />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
