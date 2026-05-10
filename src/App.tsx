@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Medicinali from "./pages/Medicinali";
 import Andamento from "./pages/Andamento";
+import DiagnosticaNotifiche from "./pages/DiagnosticaNotifiche";
 import ChatAssistant from "./components/ChatAssistant";
 
 const queryClient = new QueryClient();
