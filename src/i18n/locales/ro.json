@@ -165,5 +165,27 @@
     "soundBeep": "Beep",
     "soundBell": "Clopoțel",
     "soundMelody": "Melodie"
+  },
+  "diagnostics": {
+    "title": "Diagnostic notificări",
+    "subtitle": "Verifică permisiunile și setările necesare pentru a primi memento-urile pentru medicamente",
+    "platform": "Platformă",
+    "notifPerm": "Permisiune notificări",
+    "exactAlarm": "Alarme și memento-uri (exacte)",
+    "channel": "Canal de notificări",
+    "fix": "Rezolvă",
+    "recheck": "Reverifică",
+    "sendTest": "Trimite notificare test (5s)",
+    "testTitle": "Notificare test",
+    "testBody": "Dacă vezi asta, notificările funcționează!",
+    "testScheduled": "Test programat",
+    "testScheduledDesc": "Vei primi o notificare în 5 secunde.",
+    "webWarning": "Ești în browser: pentru a testa cu adevărat notificările deschide aplicația pe telefonul Android.",
+    "allOk": "Totul e gata! Memento-urile ar trebui să sosească corect.",
+    "howToFix": "Ce să faci dacă lipsește ceva:",
+    "tipNotif": "Acordă permisiunea Notificări din setările telefonului.",
+    "tipExact": "Activează 'Alarme și memento-uri' în setările aplicației.",
+    "tipBattery": "Setează bateria pe 'Nerestricționat' pentru această aplicație.",
+    "tipForceStop": "Nu folosi 'Forțează oprirea' aplicației, altfel memento-urile nu pornesc."
   }
 }

@@ -165,5 +165,27 @@
     "soundBeep": "Beep",
     "soundBell": "Campanella",
     "soundMelody": "Melodia"
+  },
+  "diagnostics": {
+    "title": "Diagnostica Notifiche",
+    "subtitle": "Verifica permessi e impostazioni necessari per ricevere il promemoria della medicina",
+    "platform": "Piattaforma",
+    "notifPerm": "Permesso notifiche",
+    "exactAlarm": "Allarmi e promemoria (esatti)",
+    "channel": "Canale notifiche",
+    "fix": "Risolvi",
+    "recheck": "Ricontrolla",
+    "sendTest": "Invia notifica di test (5s)",
+    "testTitle": "Notifica di test",
+    "testBody": "Se vedi questo, le notifiche funzionano!",
+    "testScheduled": "Test programmato",
+    "testScheduledDesc": "Riceverai una notifica tra 5 secondi.",
+    "webWarning": "Sei nel browser: per testare davvero le notifiche apri l'app sul telefono Android.",
+    "allOk": "Tutto pronto! Le notifiche dovrebbero arrivare regolarmente.",
+    "howToFix": "Cosa fare se manca qualcosa:",
+    "tipNotif": "Concedi il permesso Notifiche dalle impostazioni del telefono.",
+    "tipExact": "Abilita 'Allarmi e promemoria' nelle impostazioni dell'app.",
+    "tipBattery": "Imposta la batteria su 'Non ottimizzata' per questa app.",
+    "tipForceStop": "Non usare 'Termina' o 'Forza arresto' sull'app, altrimenti i promemoria non partono."
   }
 }
