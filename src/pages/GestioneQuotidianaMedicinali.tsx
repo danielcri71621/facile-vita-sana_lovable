@@ -1,3 +1,5 @@
+
+
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
@@ -147,38 +149,24 @@ const GestioneQuotidianaMedicinali = () => {
     localStorage.setItem("statiMedicinali", JSON.stringify(statiMedicinali));
   }, [statiMedicinali]);
 
-  // Filtra inserimenti per la data selezionata
-  const inserimentiOggi = inserimenti.filter(i => 
-    i.data === (date ? format(date, "yyyy-MM-dd") : "")
-  ).sort((a, b) => a.orario.localeCompare(b.orario));
-
   // Schedula notifiche native per i medicinali
   useEffect(() => {
     const scheduleNativeNotifications = async () => {
-      if (!Capacitor.isNativePlatform() || !notificheAbilitate) {
-        // Cancella tutte le notifiche se disabilitato o non nativo
-        if (Capacitor.isNativePlatform()) {
-          await LocalNotifications.cancel({ notifications: (await LocalNotifications.getPending()).notifications });
-        }
-        return;
-      }
+      if (!Capacitor.isNativePlatform() || !notificheAbilitate) return;
 
       try {
-        // 1. Cancella tutte le notifiche pendenti per evitare duplicati o notifiche vecchie
-        await LocalNotifications.cancel({ notifications: (await LocalNotifications.getPending()).notifications });
+        // Cancella notifiche esistenti
+        await LocalNotifications.cancel({ notifications: inserimentiOggi.map(i => ({ id: i.id })) });
 
         const now = new Date();
         const notifications = inserimentiOggi
           .filter(inserimento => {
             const stato = statiMedicinali[inserimento.id];
-            // Schedula solo se lo stato è "in attesa" o non definito
             if (stato && stato.stato !== "in attesa") return false;
             
             const [hours, minutes] = inserimento.orario.split(':').map(Number);
             const scheduleDate = new Date(now);
             scheduleDate.setHours(hours, minutes, 0, 0);
-            
-            // Schedula solo per orari futuri
             return scheduleDate > now;
           })
           .map(inserimento => {
@@ -194,10 +182,6 @@ const GestioneQuotidianaMedicinali = () => {
               sound: 'default',
               smallIcon: 'ic_launcher',
               largeIcon: 'ic_launcher',
-              extra: {
-                medicinaleId: inserimento.id,
-                action: 'take_medicine'
-              }
             };
           });
 
@@ -368,6 +352,11 @@ const GestioneQuotidianaMedicinali = () => {
       });
     }
   };
+
+  // Filtra inserimenti per la data selezionata
+  const inserimentiOggi = inserimenti.filter(i => 
+    i.data === (date ? format(date, "yyyy-MM-dd") : "")
+  ).sort((a, b) => a.orario.localeCompare(b.orario));
 
   const getStatoColore = (stato: "preso" | "non preso" | "in attesa" | undefined) => {
     switch (stato) {

@@ -105,9 +105,21 @@
     "medicineNotTaken": "✗ Not taken",
     "medicineNotTakenDesc": "{{name}} marked as not taken",
     "entrySaved": "Entry saved!",
-    "entrySavedDesc": "{{name}} recorded for {{date}} at {{time}}",
+    "entrySavedDesc": "{{name}} registered for {{date}} at {{time}}",
     "entryRemoved": "Entry removed",
-    "entryRemovedDesc": "The entry has been deleted"
+    "entryRemovedDesc": "The entry has been deleted",
+    "permissionStatus": "Permission Status",
+    "statusGranted": "Granted ✓",
+    "statusDenied": "Denied ✗",
+    "statusPrompt": "Request needed",
+    "statusUnknown": "Unknown",
+    "requestPermission": "Request Notification Permissions",
+    "permissionGranted": "Permissions granted!",
+    "permissionGrantedDesc": "Notifications are now active",
+    "permissionDenied": "Permissions denied",
+    "permissionDeniedDesc": "Enable notifications in phone settings",
+    "permissionError": "Error",
+    "deniedHelp": "Permissions were denied. Go to Settings > Apps > facile vita sana > Notifications to enable them manually."
   },
   "errors": {
     "missingFields": "Missing fields",
@@ -148,6 +160,32 @@
     "notificationSettings": "Notification Settings",
     "vibrationIntensity": "Vibration Intensity",
     "soundVolume": "Sound Volume",
-    "testNotification": "Test Notification"
+    "testNotification": "Test Notification",
+    "soundType": "Sound Type",
+    "soundBeep": "Beep",
+    "soundBell": "Bell",
+    "soundMelody": "Melody"
+  },
+  "diagnostics": {
+    "title": "Notifications Diagnostics",
+    "subtitle": "Check permissions and settings needed to receive medication reminders",
+    "platform": "Platform",
+    "notifPerm": "Notification permission",
+    "exactAlarm": "Alarms & reminders (exact)",
+    "channel": "Notification channel",
+    "fix": "Fix",
+    "recheck": "Re-check",
+    "sendTest": "Send test notification (5s)",
+    "testTitle": "Test notification",
+    "testBody": "If you see this, notifications work!",
+    "testScheduled": "Test scheduled",
+    "testScheduledDesc": "You will receive a notification in 5 seconds.",
+    "webWarning": "You're on the browser: to truly test notifications, open the app on your Android phone.",
+    "allOk": "All set! Reminders should arrive correctly.",
+    "howToFix": "What to do if something is missing:",
+    "tipNotif": "Grant Notifications permission in phone settings.",
+    "tipExact": "Enable 'Alarms & reminders' in the app settings.",
+    "tipBattery": "Set battery to 'Unrestricted' for this app.",
+    "tipForceStop": "Do not 'Force stop' the app, or reminders won't fire."
   }
 }
